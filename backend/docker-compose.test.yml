@@ -1,0 +1,24 @@
+version: '3.2'
+services:
+  cleachtadh:
+    volumes:
+      - .:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+      - ./reports:/usr/src/app/reports
+    environment:
+      - HEAPDUMP=disabled
+      - JWT_SECRET=my-secret-shhhhh
+      - MONGO_CONTACT_POINT=mongo_test
+    networks:
+      - test_net
+    depends_on:
+      - mongo_test
+  mongo_test:
+    image: mongo
+    expose:
+      - '27017'
+    networks:
+      - test_net
+networks:
+  test_net:
+

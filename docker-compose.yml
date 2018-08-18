@@ -1,0 +1,27 @@
+version: '3.2'
+services:
+  mongo:
+    image: mongo
+    expose:
+      - '27017'
+  api:
+    build: ./backend
+    environment:
+      - APP_PORT=7293
+      - 'APP_PUBLIC_PATH=http://localhost:7293/'
+      - JWT_SECRET=my-secret-shhhhh
+      - LOG_LEVEL=debug
+      - MONGO_CONTACT_POINT=mongo
+    expose:
+      - '7293'
+    depends_on:
+      - mongo
+    ports:
+      - '7293:7293'
+    volumes:
+      - ./backend:/usr/src/app
+      - backend_node_modules:/usr/src/app/node_modules
+volumes:
+  backend_node_modules:
+  frontend_node_modules:
+

@@ -1,0 +1,13 @@
+version: '3.2'
+services:
+  cleachtadh:
+    volumes:
+      - .:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    environment:
+      - 'APP_PUBLIC_PATH=http://localhost:7293/'
+      - JWT_SECRET=my-secret-shhhhh
+      - LOG_LEVEL=debug
+    ports:
+      - '7293:7293'
+

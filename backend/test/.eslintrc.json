@@ -1,0 +1,13 @@
+{
+  "extends": "@vanderlaan/eslint-config-vanderlaan/test",
+  "globals": {
+    "rootSuite": false,
+    "suite": false,
+    "service": false,
+    "route": false,
+    "options": false
+  },
+  "rules": {
+    "func-names": "off" // mocha some times needs a function vs. an arrow function
+  }
+}

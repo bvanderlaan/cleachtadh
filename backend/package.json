@@ -1,0 +1,68 @@
+{
+  "name": "@vanderlaan/cleachtadh",
+  "version": "1.0.0",
+  "description": "A code kata registry",
+  "main": "./src/server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bvanderlaan/cleachtadh"
+  },
+  "engines": {
+    "node": ">=8.7.0",
+    "npm": "~5.4.2"
+  },
+  "keywords": [
+    "kata",
+    "registry"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "JUNIT_REPORT_PATH=./reports/test-report.xml node_modules/.bin/istanbul cover --dir=reports/coverage _mocha -- --reporter mocha-jenkins-reporter --recursive 'test/**/!(*.bench).js'",
+    "watch": "npm test -- --watch",
+    "lint": "node_modules/.bin/eslint ./; true",
+    "ci-lint": "mkdir -p ./reports && node_modules/.bin/eslint -f checkstyle ./ > ./reports/checkstyle.xml; true",
+    "start": "node ./src/server.js",
+    "debug": "node --inspect ./src/server.js",
+    "bench": "node_modules/.bin/api-bench-runner test/**/*.bench.js --reporter default,html -o reports/benchmarks.html --setup test/index.bench.js"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "body-parser": "^1.18.3",
+    "bunyan": "^1.8.12",
+    "common-tags": "^1.8.0",
+    "express": "^4.16.3",
+    "express-bunyan-logger": "^1.3.3",
+    "express-request-id": "^1.4.0",
+    "heapdump": "^0.3.9",
+    "helmet": "^3.13.0",
+    "js-yaml": "^3.12.0",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.2.9",
+    "nconf": "^0.10.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "swagger-jsdoc": "^3.0.2",
+    "swagger-ui-express": "^3.0.10"
+  },
+  "devDependencies": {
+    "@vanderlaan/eslint-config-vanderlaan": "^1.0.0",
+    "api-bench-runner": "^1.1.0",
+    "api-benchmark": "^0.5.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-json-schema": "^1.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.2.0",
+    "mocha-jenkins-reporter": "^0.4.0",
+    "sinon": "^6.1.5",
+    "sinon-chai": "^3.2.0",
+    "superagent": "^3.8.3",
+    "uuid": "^3.3.2"
+  },
+  "files": [
+    "src/",
+    "script/"
+  ],
+  "private": true
+}

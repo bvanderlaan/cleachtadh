@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Update the application and its dependencies.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "==> Removing old dependencies..."
+npm prune
+
+echo "==> Updating dependencies..."
+npm update

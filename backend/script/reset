@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Reset the application to factory defaults
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+script/update
+
+# TODO: Add additional reset commands here.

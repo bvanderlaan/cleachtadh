@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Run bench mark test suite for application.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+[ -z "$DEBUG" ] || set -x
+
+export NODE_ENV="test" # Ensure we are in test environment
+
+script/reset -f
+
+echo "===> Running benchmarks..."
+npm run bench

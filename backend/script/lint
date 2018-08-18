@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Run linter checks for application.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+export NODE_ENV="test" # Ensure we are in test environment
+
+./script/update
+
+echo "===> Running linter checks..."
+npm run lint
