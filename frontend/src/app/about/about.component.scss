@@ -1,0 +1,54 @@
+@import "~bootstrap/scss/bootstrap";
+
+#translation {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50px;
+  width: 350px;
+
+  > div {
+    > h3, small {
+      margin: 0 10px 0 10px;
+    }
+
+    > small {
+      text-transform: uppercase;
+      color: rgb(134, 133, 133);
+    }
+
+    > i {
+      margin-left: 20px;
+      margin-right: 20px;
+      margin-top: 30px;
+    }
+
+    > hr {
+      display: none;
+      border-top-color: #000000;
+    }
+  }
+}
+
+@include media-breakpoint-up(md) {
+  #translation {
+    @include clearfix;
+
+    > div {
+      @include float-left;
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  #translation {
+    > div {
+      > hr {
+        display: block;
+      }
+
+      > i {
+        display: none;
+      }
+    }
+  }
+}
