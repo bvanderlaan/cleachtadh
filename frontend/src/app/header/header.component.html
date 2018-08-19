@@ -1,10 +1,11 @@
 <i id="top-of-page"></i>
 <nav id="header" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-  <h1 id="site-title" class="navbar-brand"><a routerLink="/">Cleachtadh</a></h1>
-  <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navigation-menu-collapse">
+  <h1 class="navbar-brand"><a routerLink="/">Cleachtadh</a></h1>
+  <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navigation-menu">
     <span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span>
   </button>
-  <div id="navigation-menu-collapse" class="collapse navbar-collapse">
+  <div id="navigation-menu" class="collapse navbar-collapse">
+    <h2 class="navbar-brand d-sm-block d-md-none"><a routerLink="/">Cleachtadh</a></h2>
     <ul class="nav navbar-nav navbar-right fa-ul">
       <li class="nav-item">
         <a class="nav-link" routerLink="/">Home</a>
@@ -13,8 +14,13 @@
         <a class="nav-link" routerLink="/about">About</a>
       </li>
     </ul>
+    <button id="navigation-menu-close" type="button" class="btn-dark btn btn-lg d-sm-block d-md-none">
+      <span class="sr-only">Close navigation</span>
+      <i class="fa fa-arrow-left"></i>
+    </button>
   </div>
   <span class="navbar-text d-none d-md-block">
     A Code Kata Registry
   </span>
+  <div class="overlay"></div>
 </nav>
