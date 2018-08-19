@@ -5,7 +5,7 @@ A code kata registry
 
 The cleachtadh project has been split up into a _backend_ and a _frontend_.
 The [backend](./backend/Readme.md) service has an HTTP RESTful API.
-The [frontned](./frontend/Readme.md) hosts a web application.
+The [frontned](./frontend/README.md) hosts a web application.
 For details on each check their Readme's.
 
 ## Development
