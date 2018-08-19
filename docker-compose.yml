@@ -21,6 +21,21 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - backend_node_modules:/usr/src/app/node_modules
+  app:
+    image: node:8-alpine
+    ports:
+      - 7292:4200
+      - 49153:49153
+    expose:
+      - '4200'
+      - '49153'
+    volumes:
+      - ./frontend:/usr/src/app
+      - frontend_node_modules:/usr/src/app/node_modules
+    working_dir: "/usr/src/app"
+    environment:
+      - API_URL=api:7293
+    command: /bin/sh -c "echo 'Install packages...'; npm install; npm run start"
 volumes:
   backend_node_modules:
   frontend_node_modules:
