@@ -1,0 +1,24 @@
+#site-title {
+  > a {
+    color: #FFFFFF;
+  }
+
+  > a:hover {
+    text-decoration: none;
+  }
+}
+
+#header {
+  border-radius: 0px;
+  background-color: #242729;
+}
+
+.navbar-text {
+  color: #FFFFFF;
+  margin-top: 0;
+}
+
+.fa-bars {
+  color: #9d9d9d;
+  font-size: 2em;
+}
