@@ -31,6 +31,11 @@
   transition: opacity 0.4s ease 0s, visibility 0.4s ease 0s;
 }
 
+.nav-icon {
+  display: none;
+  margin-right: 10px;
+}
+
 @import "~bootstrap/scss/bootstrap-grid";
 @include media-breakpoint-down(sm) {
   #navigation-menu {
@@ -47,6 +52,10 @@
 
     &.collapse:not(.show) {
       margin-left: -320px;
+    }
+
+    .nav-icon {
+      display: inline;
     }
   }
 
