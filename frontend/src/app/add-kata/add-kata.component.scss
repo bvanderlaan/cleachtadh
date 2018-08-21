@@ -1,6 +1,11 @@
 form {
-  textarea {
+  textarea, #preview {
     height: 250px;
+  }
+
+  #preview {
+    border: 1px solid #ced4da;
+    padding: 5px 10px 5px 15px;
   }
 }
 
