@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AboutComponent } from './about/about.component';
-import { AddKataComponent } from './add-kata/add-kata.component';
+import { AddKataComponent } from './kata';
 
 const routes: Routes = [{
     path: 'about',

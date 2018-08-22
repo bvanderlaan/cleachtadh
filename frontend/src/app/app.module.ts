@@ -9,7 +9,7 @@ import { RootComponent } from './root/root.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { AboutComponent } from './about/about.component';
-import { AddKataComponent } from './add-kata/add-kata.component';
+import { AddKataComponent } from './kata';
 
 const markedOptions = {
   provide: MarkedOptions,
