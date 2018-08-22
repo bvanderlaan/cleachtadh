@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule }   from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 
@@ -10,7 +11,11 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
-import { AddKataComponent } from './kata';
+import {
+  AddKataComponent,
+  KataCardComponent,
+  KataListComponent,
+} from './kata';
 
 const markedOptions = {
   provide: MarkedOptions,
@@ -40,12 +45,15 @@ const markedOptions = {
     HeaderComponent,
     AboutComponent,
     AddKataComponent,
+    KataCardComponent,
+    KataListComponent,
     HomeComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    HttpClientModule,
     MarkdownModule.forRoot({ markedOptions }),
   ],
   providers: [],
