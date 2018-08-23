@@ -8,6 +8,6 @@
     "options": false
   },
   "rules": {
-    "func-names": "off" // mocha some times needs a function vs. an arrow function
+    "promise/always-return": "off"
   }
 }

@@ -48,7 +48,7 @@ const schema = mongoose.Schema({
   },
 });
 
-schema.pre('save', function(next) {
+schema.pre('save', function (next) {
   if (this.isModified('local.password')) {
     return bcrypt.genSalt(8)
       .then(salt => bcrypt.hash(this.local.password, salt, null))
@@ -61,16 +61,12 @@ schema.pre('save', function(next) {
   return next();
 });
 
-schema.methods.validatePassword = function(password) {
+schema.methods.validatePassword = function (password) {
   return bcrypt.compareSync(password, this.local.password);
-}
+};
 
 module.exports = {
-  createModel() {
-    return mongoose.model('User', schema);
-  },
-
   getModel() {
-    return mongoose.model('User');
+    return mongoose.model('User', schema);
   },
 };

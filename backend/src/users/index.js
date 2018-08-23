@@ -1,10 +1,9 @@
 'use strict';
 
-const { getModel, createModel } = require('./user.model');
+const { getModel } = require('./user.model');
 
 module.exports = () => (
   {
-    createModel,
     get User() {
       return getModel();
     },

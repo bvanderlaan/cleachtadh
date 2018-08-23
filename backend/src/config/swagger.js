@@ -20,8 +20,39 @@ const options = {
       title,
     },
   },
-  apis: ['./**/*.controller.js', './**/*.model.js'],
+  apis: ['./src/config/swagger.js', './**/*.controller.js', './**/*.model.js'],
 };
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Error:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           description: A human readable description of what went wrong
+ *           example: The passed in parameter limit must be a number
+ *         moreInfo:
+ *           type: string
+ *           description: A link to this help documentation
+ *           example: http://mysite.com/docs#/katas/get_api_v1_katas
+ *   responses:
+ *     ServerError:
+ *       description: |
+ *         If something goes wrong and the service can not perform the requested
+ *         operation it will return a 500 response; the body will include a
+ *         description of what went wrong and a link to the help documentation.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/Error"
+ *           example:
+ *             message: Failed to retrieve Katas from database
+ *             moreInfo: http://mysite.com/docs/#/katas/get_api_v1_katas
+ */
 
 module.exports = {
   options: {
