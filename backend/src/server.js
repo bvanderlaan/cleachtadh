@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
+const { URL } = require('url');
 
 const requestAuditor = require('express-bunyan-logger');
 const helmet = require('helmet');
@@ -75,7 +76,7 @@ app.use(bodyParser.json());
 
 app.use('*', (req, res) => (
   res.status(404).json({
-    moreInfo: `${nconf.get('app_public_path')}/docs/`,
+    moreInfo: new URL('/docs/', nconf.get('app_public_path')),
     message: `Not Found: Cannot ${req.method} ${req.originalUrl}`,
   })
 ));
@@ -88,7 +89,7 @@ app.use((err, req, res, next) => {
   req.log.warn({ err }, 'Unable to handle request');
 
   return res.status(400).json({
-    moreInfo: `${nconf.get('app_public_path')}/docs/`,
+    moreInfo: new URL('/docs/', nconf.get('app_public_path')),
     message: `Bad Request: ${err.message}`,
   });
 });
