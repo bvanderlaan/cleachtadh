@@ -5,6 +5,7 @@ const log = require('./config/logger').init();
 require('./config/monitoring')();
 
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -36,8 +37,6 @@ const swaggerSpecYaml = yaml.dump(swaggerSpec);
 app.use(helmet());
 app.set('etag', false);
 
-app.use('/api', statusRoute);
-
 app.use('/docs/', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerOptions));
 app.get('/docs.json', (req, res) => {
   res.status(200).json(swaggerSpec);
@@ -46,6 +45,13 @@ app.get('/docs.yaml', (req, res) => {
   res.setHeader('Content-Type', 'text/plain');
   res.send(swaggerSpecYaml);
 });
+
+app.use(cors({
+  origin: 'http://localhost:7292',
+  operationSuccessStatus: 200
+}));
+
+app.use('/api', statusRoute);
 
 app.use(addRequestId({ attributeName: 'requestId' }));
 app.use(passport.initialize());

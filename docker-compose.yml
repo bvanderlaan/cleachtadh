@@ -35,6 +35,8 @@ services:
     working_dir: "/usr/src/app"
     environment:
       - API_URL=api:7293
+    depends_on:
+      - api
     command: /bin/sh -c "echo 'Install packages...'; npm install; npm run start"
 volumes:
   backend_node_modules:
