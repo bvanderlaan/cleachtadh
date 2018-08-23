@@ -28,7 +28,7 @@ const { url: mongoURL } = require('./config/mongo');
 const port = nconf.get('app_port');
 const app = express();
 
-mongoose.connect(mongoURL);
+mongoose.connect(mongoURL, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 
 const swaggerSpec = spec();

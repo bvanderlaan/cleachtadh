@@ -14,7 +14,7 @@ services:
     depends_on:
       - mongo_test
   mongo_test:
-    image: mongo
+    image: mongo:4.1
     expose:
       - '27017'
     networks:
