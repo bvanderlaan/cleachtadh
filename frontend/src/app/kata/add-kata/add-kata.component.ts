@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { AddKataService } from './add-kata.service';
+import { Kata } from '../kata.model';
 
 @Component({
   selector: 'app-add-kata',
@@ -6,10 +10,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./add-kata.component.scss']
 })
 export class AddKataComponent {
-  public model: KataFormData;
+  public model: Kata;
   public error: string;
 
-  constructor() {
+  constructor(private service: AddKataService, private router: Router) {
     this.error = '';
     this.model = {
       name: '',
@@ -22,12 +26,12 @@ export class AddKataComponent {
   }
 
   public addKata() {
-    console.log('sup', this.model)
+    this.service.add(this.model)
+      .subscribe(kata => {
+        this.clearError();
+        // TODO: go to newly added Kata page
+        console.log('a', kata)
+        this.router.navigate(['/']);
+      }, (err) => (this.error = err));
   }
-
-}
-
-interface KataFormData {
-  name: string,
-  description: string,
 }
