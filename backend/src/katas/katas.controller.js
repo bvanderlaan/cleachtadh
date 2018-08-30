@@ -42,7 +42,16 @@ module.exports = {
    */
   find(req, res) {
     return Kata.find({})
-      .then(katas => res.status(200).json({ katas }))
+      .then((response) => {
+        const katas = response.map(kata => ({
+          id: kata._id,
+          name: kata.name,
+          description: kata.description,
+          created_at: kata.created_at,
+        }));
+
+        return res.status(200).json({ katas });
+      })
       .catch((err) => {
         const helpURL = new URL('/docs/#/katas/get_api_v1_katas', nconf.get('app_public_path'));
 
