@@ -52,6 +52,19 @@ const options = {
  *           example:
  *             message: Failed to retrieve Katas from database
  *             moreInfo: http://mysite.com/docs/#/katas/get_api_v1_katas
+ *     BadRequest:
+ *       description: |
+ *         If one of the required parameters (body, query, header) is missing then
+ *         the service will not be able to fulfill the requested operation. It will
+ *         return a 400 response; the body will include a description indicating
+ *         which required parameter was missing and a link to the help documentation.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/Error"
+ *           example:
+ *             message: Missing the required parameters - name
+ *             moreInfo: http://mysite.com/docs/#/katas/post_api_v1_katas
  */
 
 module.exports = {

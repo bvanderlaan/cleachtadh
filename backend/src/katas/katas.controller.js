@@ -53,4 +53,72 @@ module.exports = {
         });
       });
   },
+
+  /**
+   * @swagger
+   * /api/v1/katas:
+   *   post:
+   *     description: |
+   *       This route inserts a new Kata into the registry
+   *     tags:
+   *       - katas
+   *     requestBody:
+   *       description: The Kata to add to the registry
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/Kata'
+   *     responses:
+   *       201:
+   *         description: |
+   *           This route returns a 201 on success and the body of the response
+   *           will be the kata just created.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Kata"
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
+   *       500:
+   *         $ref: "#/components/responses/ServerError"
+   */
+  create(req, res) {
+    const helpURL = new URL('/docs/#/katas/post_api_v1_katas', nconf.get('app_public_path'));
+
+    if (!req.body.name) {
+      res.status(400).json({
+        message: 'Error: Missing the Kata Name',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (!req.body.description) {
+      res.status(400).json({
+        message: 'Error: Missing the Kata Description',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    const kata = new Kata();
+    kata.name = req.body.name;
+    kata.description = req.body.description;
+
+    return kata.save()
+      .then(() => res.status(201).json({
+        id: kata._id.toString(),
+        name: kata.name,
+        description: kata.description,
+        created_at: kata.created_at,
+      }))
+      .catch((err) => {
+        req.log.error({ err }, 'Failed to add the kata');
+        res.status(500).json({
+          message: 'Error: Failed to add the kata',
+          moreInfo: helpURL.toString(),
+        });
+      });
+  },
 };
