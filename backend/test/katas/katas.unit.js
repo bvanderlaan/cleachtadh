@@ -498,4 +498,129 @@ describe('Unit :: Katas Route', () => {
       });
     });
   });
+
+  describe('Destroy', () => {
+    describe('when Kata ID is missing (some how)', () => {
+      it('should set status to 400', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(400);
+          });
+      });
+
+      it('should set body to json', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Missing the Kata ID',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/delete_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when Kata ID is invalid', () => {
+      it('should set status to 204', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = 'invalidID';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(204);
+          });
+      });
+    });
+
+    describe('when the kata does not exist', () => {
+      it('should set status to 204', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(204);
+          });
+      });
+    });
+
+    describe('when failed to delete the kata', () => {
+      before(() => sinon.stub(Kata, 'findByIdAndDelete').rejects(new Error('boom')));
+      after(() => Kata.findByIdAndDelete.restore());
+
+      it('should set status to 500', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(500);
+          });
+      });
+
+      it('should return error message in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Failed to delete the kata',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/delete_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when Kata was found', () => {
+      before(() => sinon.stub(Kata, 'findByIdAndDelete').resolves());
+      after(() => Kata.findByIdAndDelete.restore());
+
+      it('should set status to 204', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(204);
+          });
+      });
+    });
+  });
 });

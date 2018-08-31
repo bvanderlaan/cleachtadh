@@ -211,4 +211,59 @@ module.exports = {
         });
       });
   },
+
+  /**
+   * @swagger
+   * /api/v1/katas/{id}:
+   *   delete:
+   *     description: |
+   *       This route deletes a kata which exist in the registry.
+   *     tags:
+   *       - katas
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: The unique ID for the Kata to delete
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       204:
+   *         description: |
+   *           This route returns a 204 on success. If the Kata was not found
+   *           the service will still return a 204.
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
+   *       500:
+   *         $ref: "#/components/responses/ServerError"
+   */
+  destroy(req, res) {
+    const helpURL = new URL('/docs/#/katas/delete_api_v1_katas__id_', nconf.get('app_public_path'));
+
+    if (!req.params.id) {
+      res.status(400).json({
+        message: 'Error: Missing the Kata ID',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (!ObjectId.isValid(req.params.id)) {
+      req.log.info({ kataId: req.params.id }, 'Invalid Kata ID provided');
+
+      // Don't leak the ID schema, simply say the Kata does not exist
+      res.status(204).end();
+      return Promise.resolve();
+    }
+
+    return Kata.findByIdAndDelete(sanitize(req.params.id))
+      .then(() => res.status(204).end())
+      .catch((err) => {
+        req.log.error({ err, kataId: req.params.id }, 'Failed to delete the kata');
+        res.status(500).json({
+          message: 'Error: Failed to delete the kata',
+          moreInfo: helpURL.toString(),
+        });
+      });
+  },
 };
