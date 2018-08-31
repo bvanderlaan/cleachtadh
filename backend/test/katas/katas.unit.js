@@ -39,6 +39,9 @@ const createResponse = () => {
 describe('Unit :: Katas Route', () => {
   describe('Find', () => {
     describe('when no kata\'s exist', () => {
+      before(() => sinon.stub(Kata, 'find').resolves([]));
+      after(() => Kata.find.restore());
+
       it('should set status to 200', () => {
         const req = createRequest();
         const res = createResponse();
