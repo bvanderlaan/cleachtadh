@@ -65,6 +65,18 @@ const options = {
  *           example:
  *             message: Missing the required parameters - name
  *             moreInfo: http://mysite.com/docs/#/katas/post_api_v1_katas
+ *     NotFound:
+ *       description: |
+ *         If the resource specified by the ID was not found the service will
+ *         return a 404 response; the body will include a description indicating
+ *         that the resource was not found and a link to the help documentation.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/Error"
+ *           example:
+ *             message: The Kata was not found
+ *             moreInfo: http://mysite.com/docs/#/katas/get_api_v1_katas
  */
 
 module.exports = {

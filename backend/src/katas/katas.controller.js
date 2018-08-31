@@ -1,6 +1,8 @@
 'use strict';
 
 const { URL } = require('url');
+const sanitize = require('mongo-sanitize');
+const { Types: { ObjectId } } = require('mongoose');
 
 const nconf = require('../config');
 const Kata = require('./kata.model').getModel();
@@ -65,6 +67,85 @@ module.exports = {
 
   /**
    * @swagger
+   * /api/v1/katas/{id}:
+   *   get:
+   *     description: |
+   *       This route returns a kata which exist in the registry.
+   *     tags:
+   *       - katas
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: The unique ID for the Kata to fetch
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: |
+   *           This route returns a 200 on success and the body of the response
+   *           will include the Coding Katas.
+   *
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Kata"
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
+   *       404:
+   *         $ref: "#/components/responses/NotFound"
+   *       500:
+   *         $ref: "#/components/responses/ServerError"
+   */
+  findOne(req, res) {
+    const helpURL = new URL('/docs/#/katas/get_api_v1_katas__id_', nconf.get('app_public_path'));
+
+    if (!req.params.id) {
+      res.status(400).json({
+        message: 'Error: Missing the Kata ID',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (!ObjectId.isValid(req.params.id)) {
+      req.log.info({ kataId: req.params.id }, 'Invalid Kata ID provided');
+
+      // Don't leak the ID schema, simply say the Kata wasn't found
+      res.status(404).json({
+        message: 'Error: The Kata was not found',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    return Kata.findById(sanitize(req.params.id))
+      .then(kata => (
+        !kata
+          ? res.status(404)
+              .json({
+                message: 'Error: The Kata was not found',
+                moreInfo: helpURL.toString(),
+              })
+          : res.status(200)
+              .json({
+                id: kata._id,
+                name: kata.name,
+                description: kata.description,
+                created_at: kata.created_at,
+              })
+      ))
+      .catch((err) => {
+        req.log.error({ err, kataId: req.params.id }, 'Failed to retrieve the kata');
+        res.status(500).json({
+          message: 'Error: Failed to retrieve the kata',
+          moreInfo: helpURL.toString(),
+        });
+      });
+  },
+
+  /**
+   * @swagger
    * /api/v1/katas:
    *   post:
    *     description: |
@@ -112,8 +193,8 @@ module.exports = {
     }
 
     const kata = new Kata();
-    kata.name = req.body.name;
-    kata.description = req.body.description;
+    kata.name = sanitize(req.body.name);
+    kata.description = sanitize(req.body.description);
 
     return kata.save()
       .then(() => res.status(201).json({
