@@ -6,8 +6,5 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "==> Removing old dependencies..."
-npm prune
-
 echo "==> Updating dependencies..."
-npm update
+npm install
