@@ -23,7 +23,7 @@
     "ci-lint": "mkdir -p ./reports && node_modules/.bin/eslint -f checkstyle ./ > ./reports/checkstyle.xml; true",
     "start": "node ./src/server.js",
     "debug": "node --inspect ./src/server.js",
-    "bench": "node_modules/.bin/api-bench-runner test/**/*.bench.js --reporter default,html -o reports/benchmarks.html --setup test/index.bench.js"
+    "bench": "node_modules/.bin/api-bench-runner 'test/**/*.bench.js' --reporter default,html -o reports/benchmarks.html --setup test/index.bench.js"
   },
   "dependencies": {
     "bcrypt": "^3.0.0",

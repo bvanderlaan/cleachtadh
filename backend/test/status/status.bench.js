@@ -12,7 +12,7 @@ suite('Status Route', () => {
       method: 'get',
       route: 'status',
       expectedStatusCode: 200,
-      maxMean: 0.2, // 200ms
+      maxMean: 0.12, // 120ms
     });
   });
 
