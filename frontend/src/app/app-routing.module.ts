@@ -5,6 +5,7 @@ import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import {
   AddKataComponent,
+  KataComponent,
   KataCardComponent,
   KataListComponent,
 } from './kata';
@@ -18,6 +19,9 @@ const routes: Routes = [{
   }, {
     path: 'addkata',
     component: AddKataComponent,
+  }, {
+    path: 'katas/:id',
+    component: KataComponent,
   }, {
     path: '**',
     redirectTo: '',
@@ -33,6 +37,7 @@ export const routingComponents = [
   AboutComponent,
   HomeComponent,
   AddKataComponent,
+  KataComponent,
   KataCardComponent,
   KataListComponent,
 ];

@@ -1,0 +1,11 @@
+<div class="kata">
+    <div class="container-fluid">
+      <div class="row">
+        <h3>{{kata.name}}</h3>
+        <small>added {{kata.created_at | date : 'MMM dd yyyy'}}</small>
+      </div>
+      <div class="row">
+        <markdown ngPreserveWhitespaces [data]="kata.description"></markdown>
+      </div>
+    </div>
+  </div>

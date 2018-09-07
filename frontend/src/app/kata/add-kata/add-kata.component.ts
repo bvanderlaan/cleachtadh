@@ -16,6 +16,7 @@ export class AddKataComponent {
   constructor(private service: AddKataService, private router: Router) {
     this.error = '';
     this.model = {
+      id: undefined,
       name: '',
       description: '',
     };
@@ -29,9 +30,7 @@ export class AddKataComponent {
     this.service.add(this.model)
       .subscribe(kata => {
         this.clearError();
-        // TODO: go to newly added Kata page
-        console.log('a', kata)
-        this.router.navigate(['/']);
+        this.router.navigate([`/katas/${kata.id}`]);
       }, (err) => (this.error = err));
   }
 }
