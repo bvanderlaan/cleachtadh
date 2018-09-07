@@ -5,17 +5,10 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { RootComponent } from './root/root.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { AboutComponent } from './about/about.component';
-import { HomeComponent } from './home/home.component';
-import {
-  AddKataComponent,
-  KataCardComponent,
-  KataListComponent,
-} from './kata';
 
 const markedOptions = {
   provide: MarkedOptions,
@@ -43,11 +36,7 @@ const markedOptions = {
     RootComponent,
     FooterComponent,
     HeaderComponent,
-    AboutComponent,
-    AddKataComponent,
-    KataCardComponent,
-    KataListComponent,
-    HomeComponent,
+    routingComponents,
   ],
   imports: [
     BrowserModule,

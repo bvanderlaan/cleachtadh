@@ -3,7 +3,11 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
-import { AddKataComponent } from './kata';
+import {
+  AddKataComponent,
+  KataCardComponent,
+  KataListComponent,
+} from './kata';
 
 const routes: Routes = [{
     path: '',
@@ -25,3 +29,10 @@ const routes: Routes = [{
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+export const routingComponents = [
+  AboutComponent,
+  HomeComponent,
+  AddKataComponent,
+  KataCardComponent,
+  KataListComponent,
+];
