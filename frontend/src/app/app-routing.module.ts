@@ -6,7 +6,6 @@ import { HomeComponent } from './home/home.component';
 import {
   AddKataComponent,
   KataComponent,
-  KataCardComponent,
   KataListComponent,
 } from './kata';
 
@@ -38,6 +37,5 @@ export const routingComponents = [
   HomeComponent,
   AddKataComponent,
   KataComponent,
-  KataCardComponent,
   KataListComponent,
 ];

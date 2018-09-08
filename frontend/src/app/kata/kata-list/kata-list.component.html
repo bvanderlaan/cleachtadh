@@ -1,3 +1,11 @@
 <div *ngFor="let kata of katas">
-  <kata-card [kata]=kata></kata-card>
+  <div class="kata">
+    <div class="container-fluid">
+      <a [routerLink]="['/katas', kata.id]">
+        <div class="row">
+          {{kata.name}}
+        </div>
+      </a>
+    </div>
+  </div>
 </div>
