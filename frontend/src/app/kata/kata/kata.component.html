@@ -1,4 +1,8 @@
 <div class="kata">
+    <div *ngIf="error" class="alert alert-danger alert-dismissable center-block">
+      <button class="close" (click)="clearError()" aria-label="close">&times;</button>
+      <strong>Oops:</strong> {{error}}.
+    </div>
     <div class="container-fluid">
       <div class="row">
         <h3>{{kata.name}}</h3>
@@ -6,6 +10,9 @@
       </div>
       <div class="row">
         <markdown ngPreserveWhitespaces [data]="kata.description"></markdown>
+      </div>
+      <div class="row">
+        <button id="deleteButton" class="btn btn-danger float-right" (click)="delete()">Delete Kata</button>
       </div>
     </div>
   </div>

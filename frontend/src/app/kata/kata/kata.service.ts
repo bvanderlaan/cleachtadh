@@ -18,8 +18,16 @@ export class KataService {
   getKata(id: string) : Observable<Kata> {
     return this.http.get<Kata>(`${AppSettings.API_ENDPOINT}/v1/katas/${id}`)
       .pipe(catchError((error: Response) => {
-        console.error(`GET Katas Failed: ${error.statusText}`);
+        console.error(`GET Kata Failed: ${error.statusText}`);
         return of(new Kata('',''));
+      }));
+  }
+
+  deleteKata(id: string) : Observable<any> {
+    return this.http.delete(`${AppSettings.API_ENDPOINT}/v1/katas/${id}`)
+      .pipe(catchError((error: Response) => {
+        console.error(`DELETE Kata Failed: ${error.statusText}`);
+        return of(null);
       }));
   }
 }

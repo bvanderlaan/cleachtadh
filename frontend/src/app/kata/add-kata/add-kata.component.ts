@@ -28,7 +28,7 @@ export class AddKataComponent {
 
   public addKata() {
     this.service.add(this.model)
-      .subscribe(kata => {
+      .subscribe((kata) => {
         this.clearError();
         this.router.navigate([`/katas/${kata.id}`]);
       }, (err) => (this.error = err));
