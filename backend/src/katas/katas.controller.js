@@ -266,4 +266,109 @@ module.exports = {
         });
       });
   },
+
+  /**
+   * @swagger
+   * /api/v1/katas/{id}:
+   *   patch:
+   *     description: |
+   *       This route updates a Kata
+   *     tags:
+   *       - katas
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: The unique ID for the Kata to update
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       description: |
+   *         The properties of the Kata to update,
+   *         only the properties you provide will be updated
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/Kata'
+   *     responses:
+   *       200:
+   *         description: |
+   *           This route returns a 200 on success and the body of the response
+   *           will be the updated kata.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/Kata"
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
+   *       404:
+   *         $ref: "#/components/responses/NotFound"
+   *       500:
+   *         $ref: "#/components/responses/ServerError"
+   */
+  update(req, res) {
+    const helpURL = new URL('/docs/#/katas/patch_api_v1_katas__id_', nconf.get('app_public_path'));
+    const kataId = sanitize(req.params.id);
+    const data = {};
+
+    if (!kataId) {
+      res.status(400).json({
+        message: 'Error: Missing the Kata ID',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (!ObjectId.isValid(kataId)) {
+      req.log.info({ kataId }, 'Invalid Kata ID provided');
+
+      // Don't leak the ID schema, simply say the Kata does not exist
+      res.status(404).json({
+        message: `Error: Kata ${req.params.id} was not found`,
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (req.body.name) {
+      data.name = sanitize(req.body.name);
+    }
+
+    if (req.body.description) {
+      data.description = sanitize(req.body.description);
+    }
+
+    if (!data.name && !data.description) {
+      res.status(400).json({
+        message: 'Error: No values provided, nothing to update',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    return Kata.findByIdAndUpdate(kataId, data, { new: true })
+      .then((kata) => {
+        if (!kata) {
+          return res.status(404).json({
+            message: `Error: Kata ${req.params.id} was not found`,
+            moreInfo: helpURL.toString(),
+          });
+        }
+
+        return res.status(200).json({
+          id: kata._id.toString(),
+          name: kata.name,
+          description: kata.description,
+          created_at: kata.created_at,
+        });
+      })
+      .catch((err) => {
+        req.log.error({ err, kataId }, 'Failed to update the kata');
+        res.status(500).json({
+          message: 'Error: Failed to update the kata',
+          moreInfo: helpURL.toString(),
+        });
+      });
+  },
 };

@@ -307,4 +307,72 @@ describe('Integration :: Katas Route', () => {
       ));
     });
   });
+
+  describe('Update', () => {
+    let kataId;
+
+    before('populate database', () => {
+      const kata = new Kata();
+      kata.name = 'update this kata';
+      kata.description = 'this is how we do it';
+
+      return kata.save()
+        .then(() => {
+          kataId = kata._id;
+        });
+    });
+    after('Clean up database', () => (kataId ? Kata.findByIdAndDelete(kataId) : undefined));
+
+    describe('when updating description', () => {
+      it('should set status to 200', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = kataId;
+        req.body.description = 'no this is how we do it';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(Kata.findById(kataId))
+          .to.eventually.be.fulfilled
+          .then((entry) => {
+            expect(entry).to.have.property('description', 'no this is how we do it');
+          })
+      ));
+    });
+
+    describe('when updating name', () => {
+      it('should set status to 200', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = kataId;
+        req.body.name = 'updated';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(Kata.findById(kataId))
+          .to.eventually.be.fulfilled
+          .then((entry) => {
+            expect(entry).to.have.property('name', 'updated');
+          })
+      ));
+    });
+  });
 });

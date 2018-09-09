@@ -271,4 +271,111 @@ describe('System :: Katas Route', () => {
       ));
     });
   });
+
+  describe('Update', () => {
+    let kataId;
+
+    before('populate database', () => (
+      request.post(`${server.url}/v1/katas`)
+        .send({
+          name: 'my system update kata',
+          description: 'this is how we do it in a system test',
+        })
+        .then((response) => {
+          kataId = response.body.id;
+        })
+    ));
+
+    after('Clean up database', () => (
+      kataId
+        ? request.delete(`${server.url}/v1/katas/${kataId}`)
+        : undefined
+    ));
+
+    describe('when updating description', () => {
+      it('should return with 200', () => {
+        const data = {
+          description: 'now that is the ticket',
+        };
+        return expect(request.patch(`${server.url}/v1/katas/${kataId}`, data))
+          .to.eventually.be.fulfilled
+          .then((response) => {
+            expect(response).to.have.property('status', 200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(request.get(`${server.url}/v1/katas/${kataId}`))
+          .to.eventually.be.fulfilled
+          .and.have.property('body')
+          .which.has.property('description', 'now that is the ticket')
+      ));
+    });
+
+    describe('when updating name', () => {
+      it('should return with 200', () => {
+        const data = {
+          name: 'updated name',
+        };
+        return expect(request.patch(`${server.url}/v1/katas/${kataId}`, data))
+          .to.eventually.be.fulfilled
+          .then((response) => {
+            expect(response).to.have.property('status', 200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(request.get(`${server.url}/v1/katas/${kataId}`))
+          .to.eventually.be.fulfilled
+          .and.have.property('body')
+          .which.has.property('name', 'updated name')
+      ));
+    });
+
+    describe('when updating both name and description', () => {
+      it('should return with 200', () => {
+        const data = {
+          name: 'gilligan',
+          description: 'and the rest',
+        };
+        return expect(request.patch(`${server.url}/v1/katas/${kataId}`, data))
+          .to.eventually.be.fulfilled
+          .then((response) => {
+            expect(response).to.have.property('status', 200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(request.get(`${server.url}/v1/katas/${kataId}`))
+          .to.eventually.be.fulfilled
+          .then((response) => {
+            expect(response.body).to.have.property('name', 'gilligan');
+            expect(response.body).to.have.property('description', 'and the rest');
+          })
+      ));
+    });
+
+    describe('when using PUT to update both name and description', () => {
+      it('should return with 200', () => {
+        const data = {
+          name: 'professor',
+          description: 'and marry-ann',
+        };
+        return expect(request.put(`${server.url}/v1/katas/${kataId}`, data))
+          .to.eventually.be.fulfilled
+          .then((response) => {
+            expect(response).to.have.property('status', 200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(request.get(`${server.url}/v1/katas/${kataId}`))
+          .to.eventually.be.fulfilled
+          .then((response) => {
+            expect(response.body).to.have.property('name', 'professor');
+            expect(response.body).to.have.property('description', 'and marry-ann');
+          })
+      ));
+    });
+  });
 });

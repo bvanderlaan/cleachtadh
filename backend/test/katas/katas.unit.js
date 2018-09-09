@@ -626,4 +626,236 @@ describe('Unit :: Katas Route', () => {
       });
     });
   });
+
+  describe('Update', () => {
+    describe('when Kata ID is missing (some how)', () => {
+      it('should set status to 400', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(400);
+          });
+      });
+
+      it('should set body to json', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Missing the Kata ID',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/patch_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when Kata ID is invalid', () => {
+      it('should set status to 404', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = 'invalidID';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(404);
+          });
+      });
+
+      it('should set body to json', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = 'invalidID';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Kata invalidID was not found',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/patch_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when no values to update are passed in', () => {
+      it('should set status to 400', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body = {};
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(400);
+          });
+      });
+
+      it('should set body to json', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body = {};
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: No values provided, nothing to update',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/patch_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when the kata does not exist', () => {
+      before(() => sinon.stub(Kata, 'findByIdAndUpdate').resolves(null));
+      after(() => Kata.findByIdAndUpdate.restore());
+
+      it('should set status to 404', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.description = 'a new description';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(404);
+          });
+      });
+
+      it('should set body to json', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.description = 'a new description';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Kata 5b875a9797585d0029cb886d was not found',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/patch_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when failed to update the kata', () => {
+      before(() => sinon.stub(Kata, 'findByIdAndUpdate').rejects(new Error('boom')));
+      after(() => Kata.findByIdAndUpdate.restore());
+
+      it('should set status to 500', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.description = 'a new description';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(500);
+          });
+      });
+
+      it('should return error message in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.description = 'a new description';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Failed to update the kata',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/patch_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when succeed to update the kata', () => {
+      before(() => sinon.stub(Kata, 'findByIdAndUpdate').resolves({
+        _id: '5b875a9797585d0029cb886d',
+        name: 'my old name',
+        description: 'a new description',
+        created_at: 'today',
+      }));
+      after(() => Kata.findByIdAndUpdate.restore());
+
+      it('should set status to 200', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.description = 'a new description';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(200);
+          });
+      });
+
+      it('should return kata in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.description = 'a new description';
+
+        return expect(kataController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              id: '5b875a9797585d0029cb886d',
+              name: 'my old name',
+              description: 'a new description',
+              created_at: 'today',
+            });
+          });
+      });
+    });
+  });
 });
