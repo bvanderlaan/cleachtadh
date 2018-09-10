@@ -12,15 +12,45 @@ import { Kata } from '../kata.model';
 export class KataComponent implements OnInit, OnDestroy {
   private routeParamsSubscription
   private kata: Kata;
+  private cachedKata: Kata;
+  public isEditing: boolean;
   public error: string;
+  public message: string;
 
   constructor(private route: ActivatedRoute, private router: Router, private service: KataService) {
     this.error = '';
+    this.message = '';
     this.kata = new Kata('', '');
+    this.isEditing = false;
   }
 
-  public clearError() {
+  clearError() {
     this.error = '';
+  }
+
+  clearMessage() {
+    this.message = '';
+  }
+
+  edit() {
+    this.cachedKata = { ...this.kata };
+    this.clearError();
+    this.clearMessage();
+    this.isEditing = true;
+  }
+
+  cancelEdit() {
+    this.kata = { ...this.cachedKata };
+    this.isEditing = false;
+  }
+
+  public updateKata() {
+    this.service.updateKata(this.kata)
+      .subscribe((kata) => {
+        this.clearError();
+        this.isEditing = false;
+        this.message = 'Kata successfully updated';
+      }, (err) => (this.error = err));
   }
 
   delete() {

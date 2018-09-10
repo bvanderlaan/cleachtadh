@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Response } from '@angular/http';
 
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { Kata } from '../kata.model';
 import { AppSettings } from '../../app.settings';
@@ -28,6 +28,19 @@ export class KataService {
       .pipe(catchError((error: Response) => {
         console.error(`DELETE Kata Failed: ${error.statusText}`);
         return of(null);
+      }));
+  }
+
+  updateKata(kata: Kata) : Observable<{}|Kata> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+      }),
+    };
+
+    return this.http.put<Kata>(`${AppSettings.API_ENDPOINT}/v1/katas/${kata.id}`, kata, httpOptions)
+      .pipe(catchError((error: Response) => {
+        return throwError(`Failed to update Kata: ${error.statusText}`);
       }));
   }
 }
