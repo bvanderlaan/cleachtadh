@@ -62,12 +62,8 @@ module.exports = () => {
   passport.use('local-login', new LocalStrategy(loginOptions, (email, password, done) => (
     User.findOne({ 'local.email': email })
       .then((user) => {
-        if (!user) {
-          return done(null, false, 404);
-        }
-
-        if (!user.validatePassword(password)) {
-          return done(null, false, 401);
+        if (!user || !user.validatePassword(password)) {
+          return done(null, false);
         }
 
         Object.assign(user, {
