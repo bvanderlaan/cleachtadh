@@ -65,6 +65,10 @@ const options = {
  *           example:
  *             message: Missing the required parameters - name
  *             moreInfo: http://mysite.com/docs/#/katas/post_api_v1_katas
+ *     NotAuthenticated:
+ *       description: |
+ *         If the requesting user does not have permission to perform the operation the service will
+ *         return a 401 response.
  *     NotFound:
  *       description: |
  *         If the resource specified by the ID was not found the service will

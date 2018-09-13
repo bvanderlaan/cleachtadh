@@ -152,6 +152,8 @@ module.exports = {
    *       This route inserts a new Kata into the registry
    *     tags:
    *       - katas
+   *     security:
+   *       - bearerToken: []
    *     requestBody:
    *       description: The Kata to add to the registry
    *       required: true
@@ -170,6 +172,8 @@ module.exports = {
    *               $ref: "#/components/schemas/Kata"
    *       400:
    *         $ref: "#/components/responses/BadRequest"
+   *       401:
+   *         $ref: "#/components/responses/NotAuthenticated"
    *       500:
    *         $ref: "#/components/responses/ServerError"
    */
@@ -220,6 +224,8 @@ module.exports = {
    *       This route deletes a kata which exist in the registry.
    *     tags:
    *       - katas
+   *     security:
+   *       - bearerToken: []
    *     parameters:
    *       - in: path
    *         name: id
@@ -234,6 +240,8 @@ module.exports = {
    *           the service will still return a 204.
    *       400:
    *         $ref: "#/components/responses/BadRequest"
+   *       401:
+   *         $ref: "#/components/responses/NotAuthenticated"
    *       500:
    *         $ref: "#/components/responses/ServerError"
    */
@@ -275,6 +283,8 @@ module.exports = {
    *       This route updates a Kata
    *     tags:
    *       - katas
+   *     security:
+   *       - bearerToken: []
    *     parameters:
    *       - in: path
    *         name: id
@@ -302,6 +312,8 @@ module.exports = {
    *               $ref: "#/components/schemas/Kata"
    *       400:
    *         $ref: "#/components/responses/BadRequest"
+   *       401:
+   *         $ref: "#/components/responses/NotAuthenticated"
    *       404:
    *         $ref: "#/components/responses/NotFound"
    *       500:

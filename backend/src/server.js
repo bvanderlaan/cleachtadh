@@ -25,6 +25,7 @@ const passport = require('./config/passport')();
 
 const { url: mongoURL } = require('./config/mongo');
 
+const { route: authenticate } = require('./authenticate')(passport);
 const { route: katas } = require('./katas')(passport);
 
 const port = nconf.get('app_port');
@@ -50,7 +51,7 @@ app.get('/docs.yaml', (req, res) => {
 
 app.use(cors({
   origin: 'http://localhost:7292',
-  operationSuccessStatus: 200
+  operationSuccessStatus: 200,
 }));
 
 app.use('/api', statusRoute);
@@ -73,7 +74,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use('/api', katas);
+app.use('/api', authenticate, katas);
 
 app.use('*', (req, res) => (
   res.status(404).json({

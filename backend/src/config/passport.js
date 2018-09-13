@@ -6,7 +6,7 @@ const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const jwt = require('jsonwebtoken');
 
 const nconf = require('../config');
-const { User } = require('../users');
+const { User } = require('../users')();
 
 function generateJwt() {
   const expiry = new Date();
@@ -15,7 +15,7 @@ function generateJwt() {
   return jwt.sign({
     id: this.id,
     displayName: this.displayName,
-    exp: parseInt(expiry.getTime() / 1000),
+    exp: parseInt(expiry.getTime() / 1000, 10),
   }, nconf.get('jwt_secret'));
 }
 
@@ -37,20 +37,19 @@ module.exports = () => {
       .then((user) => {
         if (user) {
           return done(null, false);
-        } else {
-          const newUser = new User();
-          newUser.local.email = email;
-          newUser.local.password = password;
-          newUser.displayName = req.body.displayName;
-          newUser.generateJwt = generateJwt.bind(newUser);
-
-          return newUser.save()
-            .then(() => done(null, newUser))
-            .catch(done);
         }
+
+        const newUser = new User();
+        newUser.local.email = email;
+        newUser.local.password = password;
+        newUser.displayName = req.body.displayName;
+        newUser.generateJwt = generateJwt.bind(newUser);
+
+        return newUser.save();
       })
-      .catch(done))
-    ));
+      .then(user => done(null, user))
+      .catch(done)
+    )));
 
   const loginOptions = {
     usernameField: 'email',
@@ -67,7 +66,10 @@ module.exports = () => {
           return done(null, false, 401);
         }
 
-        user.generateJwt = generateJwt.bind(user);
+        Object.assign(user, {
+          generateJwt: generateJwt.bind(user),
+        });
+
         return done(null, user);
       })
       .catch(done)
@@ -86,8 +88,8 @@ module.exports = () => {
 
         return done(null, false);
       })
-      .catch(done)
+      .catch(done);
   }));
 
   return passport;
-}
+};

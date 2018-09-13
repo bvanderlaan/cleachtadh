@@ -30,7 +30,7 @@ const mongoose = require('mongoose');
  */
 
 const schema = mongoose.Schema({
-  display_name: {
+  displayName: {
     type: String,
     unique: false,
     required: true,
@@ -54,7 +54,7 @@ schema.pre('save', function (next) {
       .then(salt => bcrypt.hash(this.local.password, salt, null))
       .then((hash) => {
         this.local.password = hash;
-        next();
+        return next();
       })
       .catch(next);
   }
