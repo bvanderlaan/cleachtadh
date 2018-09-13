@@ -32,8 +32,12 @@ module.exports = () => {
     passwordField: 'password',
     passReqToCallback: true,
   };
-  passport.use('local-signup', new LocalStrategy(signupOptions, (req, email, password, done) => (
-    User.findOne({ 'local.email': email })
+  passport.use('local-signup', new LocalStrategy(signupOptions, (req, email, password, done) => {
+    if (!req.body.firstName || !req.body.lastName) {
+      return done(new Error('Missing Parameters firstName and/or lastName'));
+    }
+
+    return User.findOne({ 'local.email': email })
       .then((user) => {
         if (user) {
           return done(null, false);
@@ -42,14 +46,14 @@ module.exports = () => {
         const newUser = new User();
         newUser.local.email = email;
         newUser.local.password = password;
-        newUser.displayName = req.body.displayName;
+        newUser.displayName = `${req.body.firstName} ${req.body.lastName}`;
         newUser.generateJwt = generateJwt.bind(newUser);
 
         return newUser.save();
       })
       .then(user => done(null, user))
-      .catch(done)
-    )));
+      .catch(done);
+  }));
 
   const loginOptions = {
     usernameField: 'email',

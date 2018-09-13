@@ -26,6 +26,7 @@ const passport = require('./config/passport')();
 const { url: mongoURL } = require('./config/mongo');
 
 const { route: authenticate } = require('./authenticate')(passport);
+const { route: signup } = require('./signup')(passport);
 const { route: katas } = require('./katas')(passport);
 
 const port = nconf.get('app_port');
@@ -74,7 +75,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use('/api', authenticate, katas);
+app.use('/api', authenticate, signup, katas);
 
 app.use('*', (req, res) => (
   res.status(404).json({
