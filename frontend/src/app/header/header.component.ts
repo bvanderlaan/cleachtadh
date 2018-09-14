@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as $ from 'jquery';
 
+import { AuthenticationService } from '../authentication';
+
 const toggleOverlay = (mutations) => {
   mutations.forEach((mutation) => {
     if (mutation.target.classList.contains('collapsing')) {
@@ -20,8 +22,20 @@ const toggleOverlay = (mutations) => {
 })
 export class HeaderComponent implements OnInit {
   private menuObserver;
+  public loggedIn: boolean;
+  public currentUserDisplayName: string;
+
+  constructor(private authService: AuthenticationService) {
+    this.loggedIn = false;
+    this.currentUserDisplayName = '';
+  }
 
   ngOnInit() {
+    this.authService.userLogInStateSignal.subscribe((currentUserDisplayName) => {
+      this.loggedIn = !!currentUserDisplayName;
+      this.currentUserDisplayName = currentUserDisplayName;
+    });
+
     $(document).ready(() => {
       $('.navbar-nav>li>a').on('click', () => $('.navbar-toggler').click());
       $('.overlay').on('click', () => $('.navbar-toggler').click());

@@ -16,6 +16,15 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/about"><i class="fa fa-address-book nav-icon"></i>About</a>
       </li>
+      <li *ngIf="loggedIn" class="nav-item">
+        <a class="nav-link" routerLink="/login"><i class="fa fa-lock nav-icon"></i>Logout</a>
+      </li>
+      <li *ngIf="!loggedIn" class="nav-item">
+        <a class="nav-link" routerLink="/login"><i class="fa fa-unlock nav-icon"></i>Login</a>
+      </li>
+      <li *ngIf="!loggedIn" class="nav-item">
+        <a class="nav-link" routerLink="/signup"><i class="fa fa-user-plus nav-icon"></i>Signup</a>
+      </li>
     </ul>
     <button id="navigation-menu-close" type="button" class="btn-dark btn btn-lg d-sm-block d-md-none">
       <span class="sr-only">Close navigation</span>
