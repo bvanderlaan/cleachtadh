@@ -18,14 +18,10 @@ module.exports = {
    *           schema:
    *             type: object
    *             properties:
-   *               firstName:
+   *               displayName:
    *                 type: string
    *                 description: The users given name
-   *                 example: "Tony"
-   *               lastName:
-   *                 type: string
-   *                 description: The users family name
-   *                 example: "Stark"
+   *                 example: "Tony Stark"
    *               email:
    *                 type: string
    *                 description: The users email they will use to uniquely identify themselves with

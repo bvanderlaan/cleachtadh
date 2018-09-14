@@ -33,8 +33,8 @@ module.exports = () => {
     passReqToCallback: true,
   };
   passport.use('local-signup', new LocalStrategy(signupOptions, (req, email, password, done) => {
-    if (!req.body.firstName || !req.body.lastName) {
-      return done(new Error('Missing Parameters firstName and/or lastName'));
+    if (!req.body.displayName) {
+      return done(new Error('Missing Parameter displayName'));
     }
 
     return User.findOne({ 'local.email': email })
@@ -46,7 +46,7 @@ module.exports = () => {
         const newUser = new User();
         newUser.local.email = email;
         newUser.local.password = password;
-        newUser.displayName = `${req.body.firstName} ${req.body.lastName}`;
+        newUser.displayName = req.body.displayName;
         newUser.generateJwt = generateJwt.bind(newUser);
 
         return newUser.save();
