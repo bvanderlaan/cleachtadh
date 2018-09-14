@@ -1,0 +1,55 @@
+<section>
+  <div *ngIf="error" class="alert alert-danger alert-dismissable mx-auto">
+    <button class="close" (click)="clearError()" aria-label="close">&times;</button>
+    <strong>Oops:</strong> {{error}}.
+  </div>
+  <h2 class="text-center">
+    Want to add Katas? Login
+  </h2>
+  <div class="mx-auto">
+    <div class="box">
+      <form #f="ngForm" (ngSubmit)="login()" novalidate>
+        <fieldset>
+          <div class="form-group" [ngClass]="{'has-error': email.errors && (email.dirty || email.touched)}">
+            <label for="email">Email</label>
+            <input name="email" type="email" class="form-control" placeholder="you@example.ca"
+              [(ngModel)]="user.email" #email="ngModel"
+              required email />
+
+            <div *ngIf="email.errors && (email.dirty || email.touched)" class="alert alert-danger fade show">
+              <div [hidden]="!email.errors.required">
+                Email is required
+              </div>
+              <div [hidden]="!email.errors">
+                Please input a valid email.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" [ngClass]="{'has-error': password.errors && (password.dirty || password.touched)}">
+            <label for="password">Password</label>
+            <input name="password" type="password" class="form-control" placeholder="****************"
+              [(ngModel)]="user.password" #password="ngModel"
+              required minlength="8" />
+
+            <div *ngIf="password.errors && (password.dirty || password.touched)" class="alert alert-danger fade show">
+              <div [hidden]="!password.errors.required">
+                Password is required
+              </div>
+              <div [hidden]="!password.errors.minlength">
+                Password must be at least 8 characters long
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary pull-right" [disabled]="!f.valid">Log in</button>
+        </fieldset>
+      </form>
+    </div>
+    <div class="box">
+      <p class="text-center">
+        Don't have an account? <a routerLink="/signup">Sign up</a>
+      </p>
+    </div>
+  </div>
+</section>
