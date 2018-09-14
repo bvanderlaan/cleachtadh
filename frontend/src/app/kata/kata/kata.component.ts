@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { KataService } from './kata.service';
 import { Kata } from '../kata.model';
+import { AuthenticationService } from '../../authentication';
 
 @Component({
   selector: 'app-kata',
@@ -14,14 +15,16 @@ export class KataComponent implements OnInit, OnDestroy {
   private kata: Kata;
   private cachedKata: Kata;
   public isEditing: boolean;
+  public loggedIn: boolean;
   public error: string;
   public message: string;
 
-  constructor(private route: ActivatedRoute, private router: Router, private service: KataService) {
+  constructor(private route: ActivatedRoute, private router: Router, private service: KataService, private authService: AuthenticationService) {
     this.error = '';
     this.message = '';
     this.kata = new Kata('', '');
     this.isEditing = false;
+    this.loggedIn = false;
   }
 
   clearError() {
@@ -61,6 +64,10 @@ export class KataComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.authService.userLogInStateSignal.subscribe((currentUserDisplayName) => {
+      this.loggedIn = !!currentUserDisplayName;
+    });
+
     this.routeParamsSubscription = this.route.params.subscribe((params) => {
       this.service.getKata(params['id'])
         .subscribe(kata => (this.kata = kata), (err) => (this.error = err));

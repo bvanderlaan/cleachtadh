@@ -10,7 +10,7 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/"><i class="fa fa-list nav-icon"></i>Katas</a>
       </li>
-      <li class="nav-item">
+      <li *ngIf="loggedIn" class="nav-item">
         <a class="nav-link" routerLink="/addkata"><i class="fa fa-plus-square nav-icon"></i>Add Kata</a>
       </li>
       <li class="nav-item">

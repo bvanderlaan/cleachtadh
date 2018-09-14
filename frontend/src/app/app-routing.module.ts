@@ -21,6 +21,7 @@ const routes: Routes = [{
   }, {
     path: 'addkata',
     component: AddKataComponent,
+    canActivate: [AuthenticationGuard],
   }, {
     path: 'katas/:id',
     component: KataComponent,

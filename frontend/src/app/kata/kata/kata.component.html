@@ -1,16 +1,16 @@
 <div class="kata">
-  <div *ngIf="message" class="alert alert-success alert-dismissable center-block">
+  <div *ngIf="message" class="alert alert-success alert-dismissable mx-auto">
     <button class="close" (click)="clearMessage()" aria-label="close">&times;</button>
     <strong>Success:</strong> {{message}}.
   </div>
-  <div *ngIf="error" class="alert alert-danger alert-dismissable center-block">
+  <div *ngIf="error" class="alert alert-danger alert-dismissable mx-auto">
       <button class="close" (click)="clearError()" aria-label="close">&times;</button>
       <strong>Oops:</strong> {{error}}.
     </div>
   <div class="container-fluid" *ngIf="!isEditing">
     <div class="row">
       <h3>{{kata.name}}</h3>
-      <button id="editButton" class="btn btn-outline-primary" (click)="edit()">
+      <button id="editButton" *ngIf="loggedIn" class="btn btn-outline-primary" (click)="edit()">
         <i class="fa fa-edit"></i>
       </button>
       <small>added {{kata.created_at | date : 'MMM dd yyyy'}}</small>
@@ -19,7 +19,7 @@
       <markdown ngPreserveWhitespaces [data]="kata.description"></markdown>
     </div>
     <div class="row">
-      <button id="deleteButton" class="btn btn-danger float-right" (click)="delete()">Delete Kata</button>
+      <button id="deleteButton" *ngIf="loggedIn" class="btn btn-danger float-right" (click)="delete()">Delete Kata</button>
     </div>
   </div>
   <form (ngSubmit)="updateKata()" #kataForm="ngForm" *ngIf="isEditing">
