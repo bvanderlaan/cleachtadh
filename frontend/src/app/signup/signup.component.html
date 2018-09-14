@@ -1,0 +1,68 @@
+<section>
+    <div *ngIf="error" class="alert alert-danger alert-dismissable mx-auto">
+      <button class="close" (click)="clearError()" aria-label="close">&times;</button>
+      <strong>Oops:</strong> {{error}}.
+    </div>
+    <h2 class="text-center">
+      Create your Cleachtadh account. It's free and only takes a minute.
+    </h2>
+    <div class="mx-auto">
+      <div class="box">
+        <form #f="ngForm" (ngSubmit)="createUser()" novalidate>
+          <fieldset>
+            <div class="form-group" [ngClass]="{'has-error': displayName.errors && (displayName.dirty || displayName.touched)}">
+              <label>Display Name</label>
+              <input name="displayName" type="text" class="form-control" placeholder="JDoe"
+                [(ngModel)]="user.displayName" #displayName="ngModel"
+                required />
+
+              <div *ngIf="displayName.errors && (displayName.dirty || displayName.touched)" class="alert alert-danger fade show">
+                  Display Name is required
+              </div>
+            </div>
+
+            <div class="form-group" [ngClass]="{'has-error': email.errors && (email.dirty || email.touched)}">
+              <label>Email (required, but never shown)</label>
+              <input name="email" type="email" class="form-control" placeholder="you@example.ca"
+                [(ngModel)]="user.email" #email="ngModel"
+                required email />
+
+              <div *ngIf="email.errors && (email.dirty || email.touched)" class="alert alert-danger fade show">
+                <div [hidden]="!email.errors.required">
+                  Email is required
+                </div>
+                <div [hidden]="!email.errors">
+                  Please input a valid email.
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" [ngClass]="{'has-error': password.errors && (password.dirty || password.touched)}">
+              <label>Password</label>
+              <input name="password" type="password" class="form-control" placeholder="****************"
+                [(ngModel)]="user.password" #password="ngModel"
+                required minlength="8" />
+
+              <div *ngIf="password.errors && (password.dirty || password.touched)" class="alert alert-danger fade show">
+                <div [hidden]="!password.errors.required">
+                  Password is required
+                </div>
+                <div [hidden]="!password.errors.minlength">
+                  Password must be at least 8 characters long
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary pull-right" [disabled]="!f.valid">Sign up</button>
+          </fieldset>
+
+          <p class="text-center">By registering, you agree to the privacy policy and terms of service</p>
+        </form>
+      </div>
+      <div class="box">
+        <p class="text-center">
+          Already have an account? <a routerLink="/login">Log in</a>
+        </p>
+      </div>
+    </div>
+  </section>

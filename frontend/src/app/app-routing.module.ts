@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
+import { SignupComponent } from './signup/signup.component';
 import {
   AddKataComponent,
   KataComponent,
@@ -22,6 +23,9 @@ const routes: Routes = [{
     path: 'katas/:id',
     component: KataComponent,
   }, {
+    path: 'signup',
+    component: SignupComponent,
+  }, {
     path: '**',
     redirectTo: '',
   }
@@ -34,6 +38,7 @@ const routes: Routes = [{
 export class AppRoutingModule { }
 export const routingComponents = [
   AboutComponent,
+  SignupComponent,
   HomeComponent,
   AddKataComponent,
   KataComponent,
