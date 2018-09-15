@@ -26,9 +26,13 @@ export class AuthenticationService {
   }
 
   setCurrentUser(displayName: string, token: string) {
+    const bearer = token.startsWith('Bearer ')
+      ? ''
+      : 'Bearer ';
+
+    this.token = `${bearer}${token}`;
     this.displayName = displayName;
-    this.token = token;
-    localStorage.setItem('currentUser', JSON.stringify({ displayName, token }));
+    localStorage.setItem('currentUser', JSON.stringify({ displayName, token: this.token }));
     this.announceUserLogInStateChanged()
   }
 

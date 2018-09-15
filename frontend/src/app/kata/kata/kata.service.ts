@@ -7,13 +7,14 @@ import { catchError } from 'rxjs/operators';
 
 import { Kata } from '../kata.model';
 import { AppSettings } from '../../app.settings';
+import { AuthenticationService } from '../../authentication';
 
 @Injectable({
   providedIn: 'root'
 })
 export class KataService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthenticationService) { }
 
   getKata(id: string) : Observable<Kata> {
     return this.http.get<Kata>(`${AppSettings.API_ENDPOINT}/v1/katas/${id}`)
@@ -24,7 +25,13 @@ export class KataService {
   }
 
   deleteKata(id: string) : Observable<any> {
-    return this.http.delete(`${AppSettings.API_ENDPOINT}/v1/katas/${id}`)
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Authorization': this.authService.token,
+      }),
+    };
+
+    return this.http.delete(`${AppSettings.API_ENDPOINT}/v1/katas/${id}`, httpOptions)
       .pipe(catchError((error: Response) => {
         console.error(`DELETE Kata Failed: ${error.statusText}`);
         return of(null);
@@ -35,6 +42,7 @@ export class KataService {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
+        'Authorization': this.authService.token,
       }),
     };
 

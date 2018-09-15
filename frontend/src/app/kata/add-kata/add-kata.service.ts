@@ -7,18 +7,20 @@ import { catchError } from 'rxjs/operators';
 
 import { Kata } from '../kata.model';
 import { AppSettings } from '../../app.settings';
+import { AuthenticationService } from '../../authentication';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AddKataService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthenticationService) { }
 
   add(kata: Kata) : Observable<Kata> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
+        'Authorization': this.authService.token,
       }),
     };
 
