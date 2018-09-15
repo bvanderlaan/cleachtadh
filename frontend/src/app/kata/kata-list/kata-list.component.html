@@ -1,11 +1,28 @@
-<div *ngFor="let kata of katas">
-  <div class="kata">
-    <div class="container-fluid">
-      <a [routerLink]="['/katas', kata.id]">
-        <div class="row">
-          {{kata.name}}
-        </div>
-      </a>
+<div *ngIf="katas.length > 0">
+  <div *ngFor="let kata of katas">
+    <div class="kata">
+      <div class="container-fluid">
+        <a [routerLink]="['/katas', kata.id]">
+          <div class="row">
+            {{kata.name}}
+          </div>
+        </a>
+      </div>
     </div>
   </div>
+</div>
+<div *ngIf="katas.length === 0" class="mx-auto">
+  <img class="mx-auto d-block" src="assets/practicemakesperfect.jpg" alt="Practice Makes Perfect" />
+  <p>
+    Hum looks like we don't know of any Katas, if you know of any feel free to add one.
+  </p>
+  <button *ngIf="loggedIn" class="btn btn-outline-primary pull-right" routerLink="/addkata">
+    <i class="fa fa-plus"></i> Add Kata
+  </button>
+  <button *ngIf="!loggedIn" class="btn btn-outline-primary pull-right" routerLink="/login">
+    <i class="fa fa-unlock"></i> Login
+  </button>
+  <button *ngIf="!loggedIn" class="btn btn-outline-primary pull-right" routerLink="/signup">
+    <i class="fa fa-user-plus"></i> Signup
+  </button>
 </div>
