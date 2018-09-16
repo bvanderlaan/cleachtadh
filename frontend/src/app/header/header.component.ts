@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit {
     });
 
     $(document).ready(() => {
-      $('.navbar-nav>li>a').on('click', () => $('.navbar-toggler').click());
+      $(document).on('click', '.navbar-nav>li>a', () => $('.navbar-toggler').click());
       $('.overlay').on('click', () => $('.navbar-toggler').click());
       $('#navigation-menu-close').on('click', () => $('.navbar-toggler').click());
 
