@@ -1,43 +1,44 @@
 'use strict';
 
 const nconf = require('./config');
-const log = require('./config/logger').init();
+
 require('./config/monitoring')();
 
+// Configuration
+const log = require('./config/logger').init();
+const passport = require('./config/passport')();
+const { url: mongoURL } = require('./config/mongo');
+const { options: swaggerOptions, spec } = require('./config/swagger');
+
+// Plugins
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
-const mongoose = require('mongoose');
-const { URL } = require('url');
-
 const requestAuditor = require('express-bunyan-logger');
-const helmet = require('helmet');
-const swaggerUi = require('swagger-ui-express');
-const yaml = require('js-yaml');
-
 const addRequestId = require('express-request-id');
+const helmet = require('helmet');
+const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
+const { URL } = require('url');
+const yaml = require('js-yaml');
 
 const { name } = require('../package.json');
 const { create: createServer, protocol } = require('./createServer');
+
+// Routes
 const { route: statusRoute } = require('./status');
-const { options: swaggerOptions, spec } = require('./config/swagger');
-const passport = require('./config/passport')();
-
-const { url: mongoURL } = require('./config/mongo');
-
 const { route: authenticate } = require('./authenticate')(passport);
 const { route: signup } = require('./signup')(passport);
 const { route: katas } = require('./katas')(passport);
 
-const port = nconf.get('app_port');
-const app = express();
+const swaggerSpec = spec();
+const swaggerSpecYaml = yaml.dump(swaggerSpec);
 
 mongoose.connect(mongoURL, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 
-const swaggerSpec = spec();
-const swaggerSpecYaml = yaml.dump(swaggerSpec);
-
+// Connect Application
+const app = express();
 app.use(helmet());
 app.set('etag', false);
 
@@ -60,7 +61,6 @@ app.use('/api', statusRoute);
 app.use(addRequestId({ attributeName: 'requestId' }));
 app.use(passport.initialize());
 
-
 const auditOptions = {
   genReqId(req) {
     return req.requestId;
@@ -77,6 +77,7 @@ app.use(bodyParser.json());
 
 app.use('/api', authenticate, signup, katas);
 
+// Default Handler
 app.use('*', (req, res) => (
   res.status(404).json({
     moreInfo: new URL('/docs/', nconf.get('app_public_path')),
@@ -84,6 +85,7 @@ app.use('*', (req, res) => (
   })
 ));
 
+// Default Error Handler
 app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
@@ -109,6 +111,8 @@ server.once('close', () => beforeTerminate('closed'));
 process.once('SIGTERM', () => beforeTerminate('SIGTERM'));
 process.once('uncaughtException', err => beforeTerminate('uncaughtException', 'fatal', err));
 process.once('unhandledRejection', err => beforeTerminate('unhandledRejection', 'fatal', err));
+
+const port = nconf.get('app_port');
 
 Promise.resolve()
   .then(() => {
