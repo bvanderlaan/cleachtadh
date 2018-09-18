@@ -35,6 +35,11 @@ const schema = mongoose.Schema({
     unique: false,
     required: true,
   },
+  admin: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   local: {
     email: {
       type: String,

@@ -26,6 +26,7 @@ const { name } = require('../package.json');
 const { create: createServer, protocol } = require('./createServer');
 
 // Routes
+const { route: adminRoute } = require('./admin');
 const { route: statusRoute } = require('./status');
 const { route: authenticate } = require('./authenticate')(passport);
 const { route: signup } = require('./signup')(passport);
@@ -76,6 +77,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use('/api', authenticate, signup, katas);
+app.use('/admin', adminRoute);
 
 // Default Handler
 app.use('*', (req, res) => (

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cleachtadh</title>
+  <base href="./">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="admin/admin.css" type="text/css">
+</head>
+<body>
+  <i id="top-of-page"></i>
+  <nav id="header" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <h1 class="navbar-brand"><a routerLink="/">Cleachtadh</a></h1>
+    <span class="navbar-text d-none d-md-block">
+      A Code Kata Registry
+    </span>
+  </nav>
+  <div id="bodyContainer" class="container">
+    <h2 class="text-center">
+      Create your Cleachtadh Admin account.
+    </h2>
+    <p>
+      Your Cleachtadh instance does not yet have an administrator setup.
+      This is a one time setup, once an admin is created this view will no longer be visible.
+    </p>
+    <section>
+      <div class="mx-auto">
+        <div class="box">
+          <form method="post">
+            <fieldset>
+              <div class="form-group">
+                <label>Display Name</label>
+                <input name="displayName" type="text" class="form-control" placeholder="JDoe"
+                  required />
+              </div>
+
+              <div class="form-group">
+                <label>Email (required, but never shown)</label>
+                <input name="email" type="email" class="form-control" placeholder="you@example.ca"
+                  required email />
+              </div>
+
+              <div class="form-group">
+                <label>Password</label>
+                <input name="password" type="password" class="form-control" placeholder="****************"
+                  required minlength="8" />
+              </div>
+
+              <button type="submit" class="btn btn-primary pull-right">Create Admin</button>
+            </fieldset>
+
+            <p class="text-center">By registering, you agree to the privacy policy and terms of service</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted text-center">
+        <i class="fa fa-copyright" aria-hidden="true"></i> Copyright Brad van der Laan
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
