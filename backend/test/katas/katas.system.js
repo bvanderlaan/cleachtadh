@@ -3,13 +3,42 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const request = require('superagent');
+const uuid = require('uuid/v4');
 
 const server = require('../');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
+const createUser = (...{ displayName = 'Rocket Racoon', email = `rocket+${uuid()}@gmail.com` }) => (
+  request.post(`${server.url}/v1/signup`)
+    .send({
+      displayName,
+      email,
+      password: 'password',
+    })
+    .then(response => response.body.token)
+);
+
 describe('System :: Katas Route', () => {
+  let token;
+
+  const createKata = kata => (
+    request.post(`${server.url}/v1/katas`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(kata)
+  );
+
+  const deleteKata = kataId => (
+    request.delete(`${server.url}/v1/katas/${kataId}`)
+      .set('Authorization', `Bearer ${token}`)
+  );
+
+  before('create user', () => (
+    createUser()
+      .then(userToken => (token = userToken))
+  ));
+
   describe('Find', () => {
     describe('when no kata\'s exist', () => {
       it('should return an empty collection', () => (
@@ -29,17 +58,15 @@ describe('System :: Katas Route', () => {
       let kata2Id;
 
       before('populate database', () => {
-        const kata1 = request.post(`${server.url}/v1/katas`)
-          .send({
-            name: 'my first system kata',
-            description: 'this is how we do it',
-          });
+        const kata1 = createKata({
+          name: 'my first system kata',
+          description: 'this is how we do it',
+        });
 
-        const kata2 = request.post(`${server.url}/v1/katas`)
-          .send({
-            name: 'my second system kata',
-            description: 'or you can do it that way I guess',
-          });
+        const kata2 = createKata({
+          name: 'my second system kata',
+          description: 'or you can do it that way I guess',
+        });
 
         return Promise.all([kata1, kata2])
           .then(([response1, response2]) => {
@@ -49,8 +76,8 @@ describe('System :: Katas Route', () => {
       });
       after('Clean up database', () => (
         Promise.all([
-          kata1Id ? request.delete(`${server.url}/v1/katas/${kata1Id}`) : undefined,
-          kata2Id ? request.delete(`${server.url}/v1/katas/${kata2Id}`) : undefined,
+          kata1Id ? deleteKata(kata1Id) : undefined,
+          kata2Id ? deleteKata(kata2Id) : undefined,
         ])
       ));
 
@@ -91,11 +118,10 @@ describe('System :: Katas Route', () => {
     let kataId;
 
     before('populate database', () => (
-      request.post(`${server.url}/v1/katas`)
-        .send({
-          name: 'my system get kata',
-          description: 'this is how we do it in a system test',
-        })
+      createKata({
+        name: 'my system get kata',
+        description: 'this is how we do it in a system test',
+      })
         .then((response) => {
           kataId = response.body.id;
         })
@@ -103,7 +129,7 @@ describe('System :: Katas Route', () => {
 
     after('Clean up database', () => (
       kataId
-        ? request.delete(`${server.url}/v1/katas/${kataId}`)
+        ? deleteKata(kataId)
         : undefined
     ));
 
@@ -158,9 +184,24 @@ describe('System :: Katas Route', () => {
   });
 
   describe('Create', () => {
+    describe('when Not Authorized', () => {
+      it('should return a 401', () => {
+        const req = request.post(`${server.url}/v1/katas`)
+          .set('Authorization', `Bearer not-my-token`)
+          .send({
+            description: 'this is how we do it in a system test',
+          });
+
+        return expect(req)
+          .to.eventually.be.rejected
+          .and.have.property('status', 401);
+      });
+    });
+
     describe('when missing name', () => {
       it('should return a 400', () => {
         const req = request.post(`${server.url}/v1/katas`)
+          .set('Authorization', `Bearer ${token}`)
           .send({
             description: 'this is how we do it in a system test',
           });
@@ -182,6 +223,7 @@ describe('System :: Katas Route', () => {
     describe('when missing description', () => {
       it('should return a 400', () => {
         const req = request.post(`${server.url}/v1/katas`)
+          .set('Authorization', `Bearer ${token}`)
           .send({
             name: 'my system create kata',
           });
@@ -205,12 +247,13 @@ describe('System :: Katas Route', () => {
 
       after(() => (
         kataId
-          ? request.delete(`${server.url}/v1/katas/${kataId}`)
+          ? deleteKata(kataId)
           : undefined
       ));
 
       it('should return the created Kata', () => {
         const req = request.post(`${server.url}/v1/katas`)
+          .set('Authorization', `Bearer ${token}`)
           .send({
             name: 'my system create kata',
             description: 'this is how we do it in a system test',
@@ -255,11 +298,10 @@ describe('System :: Katas Route', () => {
     let kataId;
 
     before('populate database', () => (
-      request.post(`${server.url}/v1/katas`)
-        .send({
-          name: 'my system delete kata',
-          description: 'this is how we do it in a system test',
-        })
+      createKata({
+        name: 'my system delete kata',
+        description: 'this is how we do it in a system test',
+      })
         .then((response) => {
           kataId = response.body.id;
         })
@@ -267,18 +309,34 @@ describe('System :: Katas Route', () => {
 
     after('Clean up database', () => (
       kataId
-        ? request.delete(`${server.url}/v1/katas/${kataId}`)
+        ? deleteKata(kataId)
         : undefined
     ));
 
-    describe('when Kata was found', () => {
-      it('should return with 204', () => (
+    describe('when not authorized', () => {
+      it('should return with 401', () => (
         expect(request.delete(`${server.url}/v1/katas/${kataId}`))
-          .to.eventually.be.fulfilled
-          .then((response) => {
-            expect(response).to.have.property('status', 204);
-          })
+          .to.eventually.be.rejected
+          .and.have.property('status', 401)
       ));
+
+      it('should not remove the entry from the database', () => (
+        expect(request.get(`${server.url}/v1/katas/${kataId}`))
+          .to.eventually.be.fulfilled
+          .and.have.property('body')
+          .which.has.property('id', kataId.toString())
+      ));
+    });
+
+    describe('when Kata was found', () => {
+      it('should return with 204', () => {
+        const req = request.delete(`${server.url}/v1/katas/${kataId}`)
+          .set('Authorization', `Bearer ${token}`);
+
+        return expect(req)
+          .to.eventually.be.fulfilled
+          .and.have.property('status', 204);
+      });
 
       it('should have removed the entry from the database', () => (
         expect(request.get(`${server.url}/v1/katas/${kataId}`))
@@ -291,11 +349,10 @@ describe('System :: Katas Route', () => {
     let kataId;
 
     before('populate database', () => (
-      request.post(`${server.url}/v1/katas`)
-        .send({
-          name: 'my system update kata',
-          description: 'this is how we do it in a system test',
-        })
+      createKata({
+        name: 'my system update kata',
+        description: 'this is how we do it in a system test',
+      })
         .then((response) => {
           kataId = response.body.id;
         })
@@ -303,16 +360,37 @@ describe('System :: Katas Route', () => {
 
     after('Clean up database', () => (
       kataId
-        ? request.delete(`${server.url}/v1/katas/${kataId}`)
+        ? deleteKata(kataId)
         : undefined
     ));
+
+    describe('when not Authorized', () => {
+      it('should return with 401', () => {
+        const data = {
+          description: 'now that is the ticket',
+        };
+        return expect(request.patch(`${server.url}/v1/katas/${kataId}`, data))
+          .to.eventually.be.rejected
+          .and.have.property('status', 401);
+      });
+
+      it('should not have updated the entry in the database', () => (
+        expect(request.get(`${server.url}/v1/katas/${kataId}`))
+          .to.eventually.be.fulfilled
+          .and.have.property('body')
+          .which.has.property('description', 'this is how we do it in a system test')
+      ));
+    });
 
     describe('when updating description', () => {
       it('should return with 200', () => {
         const data = {
           description: 'now that is the ticket',
         };
-        return expect(request.patch(`${server.url}/v1/katas/${kataId}`, data))
+        const req = request.patch(`${server.url}/v1/katas/${kataId}`, data)
+          .set('Authorization', `Bearer ${token}`);
+
+        return expect(req)
           .to.eventually.be.fulfilled
           .then((response) => {
             expect(response).to.have.property('status', 200);
@@ -332,7 +410,10 @@ describe('System :: Katas Route', () => {
         const data = {
           name: 'updated name',
         };
-        return expect(request.patch(`${server.url}/v1/katas/${kataId}`, data))
+        const req = request.patch(`${server.url}/v1/katas/${kataId}`, data)
+          .set('Authorization', `Bearer ${token}`);
+
+        return expect(req)
           .to.eventually.be.fulfilled
           .then((response) => {
             expect(response).to.have.property('status', 200);
@@ -353,7 +434,10 @@ describe('System :: Katas Route', () => {
           name: 'gilligan',
           description: 'and the rest',
         };
-        return expect(request.patch(`${server.url}/v1/katas/${kataId}`, data))
+        const req = request.patch(`${server.url}/v1/katas/${kataId}`, data)
+          .set('Authorization', `Bearer ${token}`);
+
+        return expect(req)
           .to.eventually.be.fulfilled
           .then((response) => {
             expect(response).to.have.property('status', 200);
@@ -376,7 +460,10 @@ describe('System :: Katas Route', () => {
           name: 'professor',
           description: 'and marry-ann',
         };
-        return expect(request.put(`${server.url}/v1/katas/${kataId}`, data))
+        const req = request.put(`${server.url}/v1/katas/${kataId}`, data)
+          .set('Authorization', `Bearer ${token}`);
+
+        return expect(req)
           .to.eventually.be.fulfilled
           .then((response) => {
             expect(response).to.have.property('status', 200);
