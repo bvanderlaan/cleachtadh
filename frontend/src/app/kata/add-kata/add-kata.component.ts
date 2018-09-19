@@ -19,6 +19,7 @@ export class AddKataComponent {
       id: undefined,
       name: '',
       description: '',
+      addedBy: undefined,
     };
   }
 

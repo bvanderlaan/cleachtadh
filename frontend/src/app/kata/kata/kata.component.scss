@@ -1,7 +1,12 @@
 @import "~bootstrap/scss/bootstrap";
 
-small, #deleteButton {
+#added-by, #deleteButton {
   margin-left:auto;
+}
+
+#added-by > small {
+  display: block;
+  text-align: right;
 }
 
 #editButton {

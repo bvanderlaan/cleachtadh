@@ -13,7 +13,10 @@
       <button id="editButton" *ngIf="loggedIn" class="btn btn-outline-primary" (click)="edit()">
         <i class="fa fa-edit"></i>
       </button>
-      <small>added {{kata.created_at | date : 'MMM dd yyyy'}}</small>
+      <div id="added-by">
+        <small>added by {{kata.addedBy.name}}</small>
+        <small>on {{kata.created_at | date : 'MMM dd yyyy'}}</small>
+      </div>
     </div>
     <div class="row">
       <markdown ngPreserveWhitespaces [data]="kata.description"></markdown>
