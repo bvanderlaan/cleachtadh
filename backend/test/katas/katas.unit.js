@@ -15,6 +15,10 @@ const createRequest = () => {
   const req = {
     body: {},
     params: {},
+    user: {
+      _id: '1234',
+      displayName: 'Peter Parker',
+    },
     log: {
       info() {},
       warn() {},
@@ -110,12 +114,16 @@ describe('Unit :: Katas Route', () => {
         _id: '1',
         name: 'first kata',
         description: 'this is how we do it',
+        addedById: '1234',
+        addedByName: 'Peter Parker',
         created_at: 'today',
         updated_at: 'tomorrow',
       }, {
         _id: '2',
         name: 'second kata',
         description: 'or you can do it that way I guess',
+        addedById: '9876',
+        addedByName: 'Spider-man',
         created_at: 'next thursday',
         updated_at: 'a week today',
       }]));
@@ -148,11 +156,19 @@ describe('Unit :: Katas Route', () => {
                 id: '1',
                 name: 'first kata',
                 description: 'this is how we do it',
+                addedBy: {
+                  id: '1234',
+                  name: 'Peter Parker',
+                },
                 created_at: 'today',
               }, {
                 id: '2',
                 name: 'second kata',
                 description: 'or you can do it that way I guess',
+                addedBy: {
+                  id: '9876',
+                  name: 'Spider-man',
+                },
                 created_at: 'next thursday',
               }],
             });
@@ -306,6 +322,8 @@ describe('Unit :: Katas Route', () => {
         _id: '5b875a9797585d0029cb886d',
         name: 'my cool kata',
         description: 'this is how we do it',
+        addedById: '1234',
+        addedByName: 'Peter Parker',
         created_at: 'today',
         updated_at: 'tomorrow',
       }));
@@ -341,6 +359,10 @@ describe('Unit :: Katas Route', () => {
               id: '5b875a9797585d0029cb886d',
               name: 'my cool kata',
               description: 'this is how we do it',
+              addedBy: {
+                id: '1234',
+                name: 'Peter Parker',
+              },
               created_at: 'today',
             });
           });
@@ -495,6 +517,10 @@ describe('Unit :: Katas Route', () => {
               id: sinon.match.string,
               name: 'My Kata',
               description: 'this is a kata description',
+              addedBy: {
+                id: '1234',
+                name: 'Peter Parker',
+              },
               created_at: sinon.match.any,
             });
           });
@@ -816,6 +842,8 @@ describe('Unit :: Katas Route', () => {
         _id: '5b875a9797585d0029cb886d',
         name: 'my old name',
         description: 'a new description',
+        addedById: 'user-id-one',
+        addedByName: 'Peter Parker',
         created_at: 'today',
       }));
       after(() => Kata.findByIdAndUpdate.restore());
@@ -852,6 +880,10 @@ describe('Unit :: Katas Route', () => {
               id: '5b875a9797585d0029cb886d',
               name: 'my old name',
               description: 'a new description',
+              addedBy: {
+                id: 'user-id-one',
+                name: 'Peter Parker',
+              },
               created_at: 'today',
             });
           });

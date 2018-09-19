@@ -69,6 +69,9 @@ describe('System :: Katas Route', () => {
             expect(kata1, 'kata1').to.have.property('name', 'my first system kata');
             expect(kata1, 'kata1').to.have.property('description', 'this is how we do it');
             expect(kata1, 'kata1').to.have.property('created_at');
+            expect(kata1, 'kata1').to.have.property('addedBy');
+            expect(kata1.addedBy, 'kata1').to.have.property('id');
+            expect(kata1.addedBy, 'kata1').to.have.property('name', 'Rocket Racoon');
 
             const kata2 = response.body.katas[1];
             expect(kata2, 'kata2').to.have.property('id');
@@ -76,6 +79,9 @@ describe('System :: Katas Route', () => {
             expect(kata2, 'kata2')
               .to.have.property('description', 'or you can do it that way I guess');
             expect(kata2, 'kata2').to.have.property('created_at');
+            expect(kata2, 'kata2').to.have.property('addedBy');
+            expect(kata2.addedBy, 'kata2').to.have.property('id');
+            expect(kata2.addedBy, 'kata2').to.have.property('name', 'Rocket Racoon');
           })
       ));
     });
@@ -143,6 +149,9 @@ describe('System :: Katas Route', () => {
             expect(response.body)
               .to.have.property('description', 'this is how we do it in a system test');
             expect(response.body).to.have.property('created_at');
+            expect(response.body).to.have.property('addedBy');
+            expect(response.body.addedBy).to.have.property('id');
+            expect(response.body.addedBy).to.have.property('name', 'Rocket Racoon');
           })
       ));
     });
@@ -220,6 +229,9 @@ describe('System :: Katas Route', () => {
             expect(response.body).to.have.property('description', 'this is how we do it in a system test')
             expect(response.body).to.have.property('created_at')
               .which.is.a('string');
+            expect(response.body).to.have.property('addedBy');
+            expect(response.body.addedBy).to.have.property('id');
+            expect(response.body.addedBy).to.have.property('name', 'Rocket Racoon');
           });
       });
 
@@ -231,6 +243,9 @@ describe('System :: Katas Route', () => {
             expect(response.body).to.have.property('id', kataId);
             expect(response.body).to.have.property('name', 'my system create kata');
             expect(response.body).to.have.property('description', 'this is how we do it in a system test');
+            expect(response.body).to.have.property('addedBy');
+            expect(response.body.addedBy).to.have.property('id');
+            expect(response.body.addedBy).to.have.property('name', 'Rocket Racoon');
           })
       ));
     });

@@ -7,6 +7,17 @@ const { Types: { ObjectId } } = require('mongoose');
 const nconf = require('../config');
 const Kata = require('./kata.model').getModel();
 
+const presentKata = kata => ({
+  id: kata._id.toString(),
+  name: kata.name,
+  description: kata.description,
+  addedBy: {
+    id: kata.addedById,
+    name: kata.addedByName,
+  },
+  created_at: kata.created_at,
+});
+
 /**
  * @swagger
  * tags:
@@ -45,12 +56,7 @@ module.exports = {
   find(req, res) {
     return Kata.find({})
       .then((response) => {
-        const katas = response.map(kata => ({
-          id: kata._id,
-          name: kata.name,
-          description: kata.description,
-          created_at: kata.created_at,
-        }));
+        const katas = response.map(presentKata);
 
         return res.status(200).json({ katas });
       })
@@ -128,12 +134,7 @@ module.exports = {
                 moreInfo: helpURL.toString(),
               })
           : res.status(200)
-              .json({
-                id: kata._id,
-                name: kata.name,
-                description: kata.description,
-                created_at: kata.created_at,
-              })
+              .json(presentKata(kata))
       ))
       .catch((err) => {
         req.log.error({ err, kataId: req.params.id }, 'Failed to retrieve the kata');
@@ -199,14 +200,11 @@ module.exports = {
     const kata = new Kata();
     kata.name = sanitize(req.body.name);
     kata.description = sanitize(req.body.description);
+    kata.addedById = req.user._id;
+    kata.addedByName = req.user.displayName;
 
     return kata.save()
-      .then(() => res.status(201).json({
-        id: kata._id.toString(),
-        name: kata.name,
-        description: kata.description,
-        created_at: kata.created_at,
-      }))
+      .then(() => res.status(201).json(presentKata(kata)))
       .catch((err) => {
         req.log.error({ err }, 'Failed to add the kata');
         res.status(500).json({
@@ -368,12 +366,7 @@ module.exports = {
           });
         }
 
-        return res.status(200).json({
-          id: kata._id.toString(),
-          name: kata.name,
-          description: kata.description,
-          created_at: kata.created_at,
-        });
+        return res.status(200).json(presentKata(kata));
       })
       .catch((err) => {
         req.log.error({ err, kataId }, 'Failed to update the kata');

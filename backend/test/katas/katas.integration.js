@@ -15,6 +15,10 @@ const createRequest = () => {
   const req = {
     body: {},
     params: {},
+    user: {
+      _id: 'myUserId',
+      displayName: 'Bruce Banner',
+    },
     log: {
       info() {},
       warn() {},
@@ -76,10 +80,14 @@ describe('Integration :: Katas Route', () => {
         const kata1 = new Kata();
         kata1.name = 'first kata';
         kata1.description = 'this is how we do it';
+        kata1.addedById = 'myUserId',
+        kata1.addedByName = 'Bruce Banner';
 
         const kata2 = new Kata();
         kata2.name = 'second kata';
         kata2.description = 'or you can do it that way I guess';
+        kata2.addedById = 'myOtherUserId',
+        kata2.addedByName = 'Hulk, The';
 
         return Promise.all([kata1.save(), kata2.save()])
           .then(() => {
@@ -118,14 +126,22 @@ describe('Integration :: Katas Route', () => {
             expect(res.json, 'json').to.have.been.calledOnce;
             expect(res.json, 'json').to.have.been.calledWith({
               katas: [{
-                id: kata1Id,
+                id: kata1Id.toString(),
                 name: 'first kata',
                 description: 'this is how we do it',
+                addedBy: {
+                  id: 'myUserId',
+                  name: 'Bruce Banner',
+                },
                 created_at: sinon.match.date,
               }, {
-                id: kata2Id,
+                id: kata2Id.toString(),
                 name: 'second kata',
                 description: 'or you can do it that way I guess',
+                addedBy: {
+                  id: 'myOtherUserId',
+                  name: 'Hulk, The',
+                },
                 created_at: sinon.match.date,
               }],
             });
@@ -177,6 +193,8 @@ describe('Integration :: Katas Route', () => {
         const kata1 = new Kata();
         kata1.name = 'first kata';
         kata1.description = 'this is how we do it';
+        kata1.addedById = 'myUserId';
+        kata1.addedByName = 'Bruce Banner';
 
         return kata1.save()
           .then(() => {
@@ -214,9 +232,13 @@ describe('Integration :: Katas Route', () => {
           .then(() => {
             expect(res.json, 'json').to.have.been.calledOnce;
             expect(res.json, 'json').to.have.been.calledWith({
-              id: kata1Id,
+              id: kata1Id.toString(),
               name: 'first kata',
               description: 'this is how we do it',
+              addedBy: {
+                id: 'myUserId',
+                name: 'Bruce Banner',
+              },
               created_at: sinon.match.date,
             });
           });
@@ -248,6 +270,10 @@ describe('Integration :: Katas Route', () => {
               id: sinon.match.string,
               name: 'My New (create) Kata',
               description: 'this is a kata description',
+              addedBy: {
+                id: 'myUserId',
+                name: 'Bruce Banner',
+              },
               created_at: sinon.match.any,
             });
           });
@@ -273,6 +299,8 @@ describe('Integration :: Katas Route', () => {
       const kata = new Kata();
       kata.name = 'delete this kata';
       kata.description = 'this is how we do it';
+      kata.addedById = 'myUserId';
+      kata.addedByName = 'Bruce Banner';
 
       return kata.save()
         .then(() => {
@@ -315,6 +343,8 @@ describe('Integration :: Katas Route', () => {
       const kata = new Kata();
       kata.name = 'update this kata';
       kata.description = 'this is how we do it';
+      kata.addedById = 'myUserId';
+      kata.addedByName = 'Bruce Banner';
 
       return kata.save()
         .then(() => {

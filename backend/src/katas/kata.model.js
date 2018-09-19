@@ -47,6 +47,16 @@ const schema = mongoose.Schema({
     unique: false,
     required: true,
   },
+  addedById: {
+    type: String,
+    unique: false,
+    required: true,
+  },
+  addedByName: {
+    type: String,
+    unique: false,
+    required: true,
+  },
 }, {
   timestamps: {
     createdAt: 'created_at',
