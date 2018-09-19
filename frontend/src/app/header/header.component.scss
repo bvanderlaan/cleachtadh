@@ -1,4 +1,6 @@
 .navbar-brand {
+  margin-left: 15px;
+
   > a {
     color: #FFFFFF;
   }
@@ -8,14 +10,26 @@
   }
 }
 
+#navigation-menu {
+  > p {
+    margin-left: 15px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
 #header {
   border-radius: 0px;
   background-color: #242729;
 }
 
 .navbar-text {
-  color: #FFFFFF;
   margin-top: 0;
+  padding: 0px;
+
+  > p {
+    color: #FFFFFF;
+    margin: 0px;
+  }
 }
 
 .overlay {
@@ -37,6 +51,14 @@
 }
 
 @import "~bootstrap/scss/bootstrap-grid";
+@include media-breakpoint-up(md) {
+  #navigation-menu {
+    > p {
+      display: none;
+    }
+  }
+}
+
 @include media-breakpoint-down(sm) {
   #navigation-menu {
     z-index: 1000;
