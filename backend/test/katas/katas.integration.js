@@ -89,7 +89,8 @@ describe('Integration :: Katas Route', () => {
         kata2.addedById = 'myOtherUserId';
         kata2.addedByName = 'Hulk, The';
 
-        return Promise.all([kata1.save(), kata2.save()])
+        return kata1.save()
+          .then(() => kata2.save())
           .then(() => {
             kata1Id = kata1._id;
             kata2Id = kata2._id;
