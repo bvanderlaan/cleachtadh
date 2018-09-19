@@ -187,7 +187,7 @@ describe('System :: Katas Route', () => {
     describe('when Not Authorized', () => {
       it('should return a 401', () => {
         const req = request.post(`${server.url}/v1/katas`)
-          .set('Authorization', `Bearer not-my-token`)
+          .set('Authorization', 'Bearer not-my-token')
           .send({
             description: 'this is how we do it in a system test',
           });
@@ -268,8 +268,8 @@ describe('System :: Katas Route', () => {
 
             kataId = response.body.id;
 
-            expect(response.body).to.have.property('name', 'my system create kata')
-            expect(response.body).to.have.property('description', 'this is how we do it in a system test')
+            expect(response.body).to.have.property('name', 'my system create kata');
+            expect(response.body).to.have.property('description', 'this is how we do it in a system test');
             expect(response.body).to.have.property('created_at')
               .which.is.a('string');
             expect(response.body).to.have.property('addedBy');

@@ -6,7 +6,7 @@ const nconf = require('nconf');
 const { name, version } = require('../../package.json');
 
 module.exports.log = {};
-module.exports.init = (options = {}) => {
+module.exports.init = () => {
   const log = module.exports.log;
 
   // Don't init twice

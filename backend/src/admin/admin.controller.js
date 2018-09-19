@@ -39,10 +39,8 @@ module.exports = {
     newAdmin.displayName = req.body.displayName;
     newAdmin.admin = true;
 
-    newAdmin.save()
-      .then(() => {
-        res.status(201).end();
-      })
+    return newAdmin.save()
+      .then(() => res.status(201).end())
       .catch((err) => {
         req.log.error({ err }, 'Failed to create Admin');
         res.status(500).json({ message: 'Failed to create Admin' });

@@ -80,13 +80,13 @@ describe('Integration :: Katas Route', () => {
         const kata1 = new Kata();
         kata1.name = 'first kata';
         kata1.description = 'this is how we do it';
-        kata1.addedById = 'myUserId',
+        kata1.addedById = 'myUserId';
         kata1.addedByName = 'Bruce Banner';
 
         const kata2 = new Kata();
         kata2.name = 'second kata';
         kata2.description = 'or you can do it that way I guess';
-        kata2.addedById = 'myOtherUserId',
+        kata2.addedById = 'myOtherUserId';
         kata2.addedByName = 'Hulk, The';
 
         return Promise.all([kata1.save(), kata2.save()])
