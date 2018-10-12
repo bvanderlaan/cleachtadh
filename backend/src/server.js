@@ -31,6 +31,7 @@ const { route: statusRoute } = require('./status');
 const { route: authenticate } = require('./authenticate')(passport);
 const { route: signup } = require('./signup')(passport);
 const { route: katas } = require('./katas')(passport);
+const { route: users } = require('./users')(passport);
 
 const swaggerSpec = spec();
 const swaggerSpecYaml = yaml.dump(swaggerSpec);
@@ -76,7 +77,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use('/api', authenticate, signup, katas);
+app.use('/api', authenticate, signup, katas, users);
 app.use('/admin', adminRoute);
 
 // Default Handler
