@@ -145,4 +145,63 @@ module.exports = {
         });
       });
   },
+
+  /**
+   * @swagger
+   * /api/v1/users/{id}:
+   *   delete:
+   *     description: |
+   *       This route deletes a user which exist in the system.
+   *     tags:
+   *       - users
+   *     security:
+   *       - bearerToken: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: The unique ID for the User to delete
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       204:
+   *         description: |
+   *           This route returns a 204 on success. If the User was not found
+   *           the service will still return a 204.
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
+   *       401:
+   *         $ref: "#/components/responses/NotAuthenticated"
+   *       500:
+   *         $ref: "#/components/responses/ServerError"
+   */
+  destroy(req, res) {
+    const helpURL = new URL('/docs/#/users/delete_api_v1_users__id_', nconf.get('app_public_path'));
+
+    if (!req.params.id) {
+      res.status(400).json({
+        message: 'Error: Missing the User ID',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (!ObjectId.isValid(req.params.id)) {
+      req.log.info({ userId: req.params.id }, 'Invalid User ID provided');
+
+      // Don't leak the ID schema, simply say the User does not exist
+      res.status(204).end();
+      return Promise.resolve();
+    }
+
+    return User.findByIdAndDelete(sanitize(req.params.id))
+      .then(() => res.status(204).end())
+      .catch((err) => {
+        req.log.error({ err, userId: req.params.id }, 'Failed to delete the user');
+        res.status(500).json({
+          message: 'Error: Failed to delete the user',
+          moreInfo: helpURL.toString(),
+        });
+      });
+  },
 };

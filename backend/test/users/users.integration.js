@@ -230,4 +230,47 @@ describe('Integration :: User Route', () => {
       });
     });
   });
+
+  describe('Destroy', () => {
+    let userId;
+
+    before('populate database', () => {
+      const user = new User();
+      user.displayName = 'Bruce Banner';
+      user.local.email = 'bruce.banner@testMail.com';
+      user.local.password = 'password';
+
+      return user.save()
+        .then(() => {
+          userId = user._id;
+        });
+    });
+    after('Clean up database', () => (userId ? User.findByIdAndDelete(userId) : undefined));
+
+    describe('when User was found', () => {
+      it('should set status to 204', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = userId;
+
+        return expect(userController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(204);
+          });
+      });
+
+      it('should have removed the entry from the database', () => (
+        expect(User.findById(userId))
+          .to.eventually.be.fulfilled
+          .then((entry) => {
+            expect(entry).to.be.null;
+            userId = null;
+          })
+      ));
+    });
+  });
 });
