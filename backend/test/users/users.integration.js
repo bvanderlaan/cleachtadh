@@ -140,4 +140,94 @@ describe('Integration :: User Route', () => {
       });
     });
   });
+
+  describe('FindOne', () => {
+    describe('when the user does not exist', () => {
+      it('should set status to 404', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(userController.findOne(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(404);
+          });
+      });
+
+      it('should set body to json', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(userController.findOne(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: The User was not found',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/get_api_v1_users__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when User was found', () => {
+      let user1Id;
+
+      before('populate database', () => {
+        const user1 = new User();
+        user1.displayName = 'Peter Parker';
+        user1.local.email = 'peter.parker@testMail.com';
+        user1.local.password = 'password';
+
+        return user1.save()
+          .then(() => {
+            user1Id = user1._id;
+          });
+      });
+      after('Clean up database', () => (
+        user1Id ? User.findByIdAndDelete(user1Id) : undefined
+      ));
+
+      it('should set status to 200', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = user1Id;
+
+        return expect(userController.findOne(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(200);
+          });
+      });
+
+      it('should return user in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = user1Id;
+
+        return expect(userController.findOne(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              id: user1Id.toString(),
+              displayName: 'Peter Parker',
+              admin: false,
+            });
+          });
+      });
+    });
+  });
 });

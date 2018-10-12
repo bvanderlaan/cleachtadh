@@ -1,6 +1,8 @@
 'use strict';
 
 const { URL } = require('url');
+const sanitize = require('mongo-sanitize');
+const { Types: { ObjectId } } = require('mongoose');
 
 const nconf = require('../config');
 const User = require('./user.model').getModel();
@@ -62,6 +64,83 @@ module.exports = {
         req.log.error({ err }, 'Failed to retrieve users');
         res.status(500).json({
           message: 'Error: Failed to retrieve users',
+          moreInfo: helpURL.toString(),
+        });
+      });
+  },
+
+  /**
+   * @swagger
+   * /api/v1/users/{id}:
+   *   get:
+   *     description: |
+   *       This route returns a user which exist in the system.
+   *     tags:
+   *       - users
+   *     security:
+   *       - bearerToken: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: The unique ID for the User to fetch
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: |
+   *           This route returns a 200 on success and the body of the response
+   *           will include the User.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/User"
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
+   *       401:
+   *         $ref: "#/components/responses/NotAuthenticated"
+   *       404:
+   *         $ref: "#/components/responses/NotFound"
+   *       500:
+   *         $ref: "#/components/responses/ServerError"
+   */
+  findOne(req, res) {
+    const helpURL = new URL('/docs/#/users/get_api_v1_users__id_', nconf.get('app_public_path'));
+
+    if (!req.params.id) {
+      res.status(400).json({
+        message: 'Error: Missing the User ID',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (!ObjectId.isValid(req.params.id)) {
+      req.log.info({ userId: req.params.id }, 'Invalid User ID provided');
+
+      // Don't leak the ID schema, simply say the User wasn't found
+      res.status(404).json({
+        message: 'Error: The User was not found',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    return User.findById(sanitize(req.params.id))
+      .then(user => (
+        !user
+          ? res.status(404)
+              .json({
+                message: 'Error: The User was not found',
+                moreInfo: helpURL.toString(),
+              })
+          : res.status(200)
+              .json(presentUser(user))
+      ))
+      .catch((err) => {
+        req.log.error({ err, userId: req.params.id }, 'Failed to retrieve the user');
+        res.status(500).json({
+          message: 'Error: Failed to retrieve the user',
           moreInfo: helpURL.toString(),
         });
       });
