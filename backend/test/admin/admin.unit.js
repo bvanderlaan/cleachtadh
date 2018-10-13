@@ -204,5 +204,49 @@ describe('Unit :: Admin Route', () => {
           });
       });
     });
+
+    describe('when succeeded to save the admin user', () => {
+      before(() => sinon.stub(User.prototype, 'save').resolves());
+      after(() => User.prototype.save.restore());
+
+      it('should set status to 201', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.body.displayName = 'Groot';
+        req.body.email = 'i.am.groot@emai.com';
+        req.body.password = 'iamgroot';
+
+        return expect(adminController.create(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(201);
+          });
+      });
+
+      it('should return admin user in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.body.displayName = 'Groot';
+        req.body.email = 'i.am.groot@emai.com';
+        req.body.password = 'iamgroot';
+
+        return expect(adminController.create(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              id: sinon.match.string,
+              displayName: 'Groot',
+              state: User.States().ACTIVE,
+              admin: true,
+            });
+          });
+      });
+    });
   });
 });

@@ -44,7 +44,10 @@ module.exports = {
     newAdmin.state = User.States().ACTIVE;
 
     return newAdmin.save()
-      .then(() => res.status(201).end())
+      .then(() => (
+        res.status(201)
+          .json(newAdmin.present())
+      ))
       .catch((err) => {
         req.log.error({ err }, 'Failed to create Admin');
         res.status(500).json({ message: 'Error: Failed to create Admin' });
