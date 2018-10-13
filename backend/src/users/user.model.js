@@ -18,6 +18,9 @@ const mongoose = require('mongoose');
  *           type: string
  *           description: A unique ID for the user
  *           example: 7b52608f-897b-41d4-8599-fef76dcaecf1
+ *         admin:
+ *           type: boolean
+ *           description: True if the user is an admin user
  *         displayName:
  *           type: string
  *           description: The users display name, the name we show in the app
@@ -27,6 +30,10 @@ const mongoose = require('mongoose');
  *         password:
  *           type: string
  *           description: The users password, used for logging in and not stored in plain text
+ *         state:
+ *           description: The state the user is in. 0 == PENDING, 1 == ACTIVE
+ *           type: integer
+ *           enum: [0, 1]
  */
 
 const schema = mongoose.Schema({
@@ -39,6 +46,11 @@ const schema = mongoose.Schema({
     type: Boolean,
     required: false,
     default: false,
+  },
+  state: {
+    type: Number,
+    required: false,
+    default: 0,
   },
   local: {
     email: {
@@ -69,6 +81,11 @@ schema.pre('save', function (next) {
 schema.methods.validatePassword = function (password) {
   return bcrypt.compareSync(password, this.local.password);
 };
+
+schema.statics.States = () => ({
+  PENDING: 0,
+  ACTIVE: 1,
+});
 
 module.exports = {
   getModel() {

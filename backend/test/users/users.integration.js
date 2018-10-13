@@ -130,10 +130,12 @@ describe('Integration :: User Route', () => {
                 id: user1Id.toString(),
                 displayName: 'Peter Parker',
                 admin: false,
+                state: User.States().PENDING,
               }, {
                 id: user2Id.toString(),
                 displayName: 'Bruce Banner',
                 admin: false,
+                state: User.States().PENDING,
               }],
             });
           });
@@ -225,6 +227,7 @@ describe('Integration :: User Route', () => {
               id: user1Id.toString(),
               displayName: 'Peter Parker',
               admin: false,
+              state: User.States().PENDING,
             });
           });
       });
@@ -269,6 +272,101 @@ describe('Integration :: User Route', () => {
           .then((entry) => {
             expect(entry).to.be.null;
             userId = null;
+          })
+      ));
+    });
+  });
+
+  describe('Update', () => {
+    let userId;
+
+    before('populate database', () => {
+      const user = new User();
+      user.displayName = 'David Banner';
+      user.local.email = 'bruce.banner@testMail.com';
+      user.local.password = 'password';
+
+      return user.save()
+        .then(() => {
+          userId = user._id;
+        });
+    });
+    after('Clean up database', () => (userId ? User.findByIdAndDelete(userId) : undefined));
+
+    describe('when updating display name', () => {
+      it('should set status to 200', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = userId;
+        req.body.displayName = 'Bruce Banner';
+
+        return expect(userController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(User.findById(userId))
+          .to.eventually.be.fulfilled
+          .then((entry) => {
+            expect(entry).to.have.property('displayName', 'Bruce Banner');
+          })
+      ));
+    });
+
+    describe('when promoting to admin', () => {
+      it('should set status to 200', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = userId;
+        req.body.admin = true;
+
+        return expect(userController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(User.findById(userId))
+          .to.eventually.be.fulfilled
+          .then((entry) => {
+            expect(entry).to.have.property('admin', true);
+          })
+      ));
+    });
+
+    describe('when approving the user account', () => {
+      it('should set status to 200', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = userId;
+        req.body.state = User.States().ACTIVE;
+
+        return expect(userController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(200);
+          });
+      });
+
+      it('should have updated the entry in the database', () => (
+        expect(User.findById(userId))
+          .to.eventually.be.fulfilled
+          .then((entry) => {
+            expect(entry).to.have.property('state', User.States().ACTIVE);
           })
       ));
     });

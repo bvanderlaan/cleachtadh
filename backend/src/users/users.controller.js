@@ -11,6 +11,7 @@ const presentUser = user => ({
   id: user._id.toString(),
   displayName: user.displayName,
   admin: user.admin,
+  state: user.state,
 });
 
 /**
@@ -200,6 +201,130 @@ module.exports = {
         req.log.error({ err, userId: req.params.id }, 'Failed to delete the user');
         res.status(500).json({
           message: 'Error: Failed to delete the user',
+          moreInfo: helpURL.toString(),
+        });
+      });
+  },
+
+  /**
+   * @swagger
+   * /api/v1/users/{id}:
+   *   patch:
+   *     description: |
+   *       This route updates a User
+   *     tags:
+   *       - users
+   *     security:
+   *       - bearerToken: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: The unique ID for the User to update
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       description: |
+   *         The properties of the User to update,
+   *         only the properties you provide will be updated
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/User'
+   *     responses:
+   *       200:
+   *         description: |
+   *           This route returns a 200 on success and the body of the response
+   *           will be the updated user.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: "#/components/schemas/User"
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
+   *       401:
+   *         $ref: "#/components/responses/NotAuthenticated"
+   *       404:
+   *         $ref: "#/components/responses/NotFound"
+   *       500:
+   *         $ref: "#/components/responses/ServerError"
+   */
+  update(req, res) {
+    const helpURL = new URL('/docs/#/users/patch_api_v1_users__id_', nconf.get('app_public_path'));
+    const userId = sanitize(req.params.id);
+    const data = {};
+
+    if (!userId) {
+      res.status(400).json({
+        message: 'Error: Missing the User ID',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (!ObjectId.isValid(userId)) {
+      req.log.info({ userId }, 'Invalid User ID provided');
+
+      // Don't leak the ID schema, simply say the User does not exist
+      res.status(404).json({
+        message: `Error: User ${req.params.id} was not found`,
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (req.body.displayName) {
+      data.displayName = sanitize(req.body.displayName);
+    }
+
+    if (req.body.admin !== undefined) {
+      if (typeof req.body.admin !== 'boolean') {
+        res.status(400).json({
+          message: `Error: Invalid Admin Flag provided: ${req.body.admin}`,
+          moreInfo: helpURL.toString(),
+        });
+        return Promise.resolve();
+      }
+      data.admin = sanitize(req.body.admin);
+    }
+
+    if (req.body.state !== undefined) {
+      const state = sanitize(req.body.state);
+      if ((typeof req.body.state !== 'number') || (!Object.values(User.States()).includes(state))) {
+        res.status(400).json({
+          message: `Error: Invalid User state provided: ${req.body.state}`,
+          moreInfo: helpURL.toString(),
+        });
+        return Promise.resolve();
+      }
+
+      data.state = state;
+    }
+
+    if (!data.displayName && data.admin === undefined && data.state === undefined) {
+      res.status(400).json({
+        message: 'Error: No values provided, nothing to update',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    return User.findByIdAndUpdate(userId, data, { new: true })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({
+            message: `Error: User ${req.params.id} was not found`,
+            moreInfo: helpURL.toString(),
+          });
+        }
+
+        return res.status(200).json(presentUser(user));
+      })
+      .catch((err) => {
+        req.log.error({ err, userId }, 'Failed to update the user');
+        res.status(500).json({
+          message: 'Error: Failed to update the user',
           moreInfo: helpURL.toString(),
         });
       });
