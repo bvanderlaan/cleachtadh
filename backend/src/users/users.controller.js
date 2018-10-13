@@ -7,13 +7,6 @@ const { Types: { ObjectId } } = require('mongoose');
 const nconf = require('../config');
 const User = require('./user.model').getModel();
 
-const presentUser = user => ({
-  id: user._id.toString(),
-  displayName: user.displayName,
-  admin: user.admin,
-  state: user.state,
-});
-
 /**
  * @swagger
  * tags:
@@ -55,7 +48,7 @@ module.exports = {
   find(req, res) {
     return User.find({})
       .then((response) => {
-        const users = response.map(presentUser);
+        const users = response.map(user => user.present());
 
         return res.status(200).json({ users });
       })
@@ -136,7 +129,7 @@ module.exports = {
                 moreInfo: helpURL.toString(),
               })
           : res.status(200)
-              .json(presentUser(user))
+              .json(user.present())
       ))
       .catch((err) => {
         req.log.error({ err, userId: req.params.id }, 'Failed to retrieve the user');
@@ -327,7 +320,7 @@ module.exports = {
           });
         }
 
-        return res.status(200).json(presentUser(user));
+        return res.status(200).json(user.present());
       })
       .catch((err) => {
         req.log.error({ err, userId }, 'Failed to update the user');

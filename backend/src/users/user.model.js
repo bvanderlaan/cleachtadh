@@ -82,6 +82,15 @@ schema.methods.validatePassword = function (password) {
   return bcrypt.compareSync(password, this.local.password);
 };
 
+schema.methods.present = function () {
+  return {
+    id: this._id.toString(),
+    displayName: this.displayName,
+    admin: this.admin,
+    state: this.state,
+  };
+}
+
 schema.statics.States = () => ({
   PENDING: 0,
   ACTIVE: 1,

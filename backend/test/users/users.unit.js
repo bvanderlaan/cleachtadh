@@ -40,6 +40,55 @@ const createResponse = () => {
   return res;
 };
 
+class UserMock {
+  constructor({ id, displayName, admin, state }) {
+    this.id = id;
+    this.displayName = displayName;
+    this.admin = admin;
+    this.state = state;
+  }
+
+  present() {
+    return this;
+  }
+}
+
+describe('Unit :: Users Model', () => {
+  describe('Present', () => {
+    it('should change _id to id', () => {
+      const user = new User();
+      expect(user).to.have.property('_id');
+
+      const payload = user.present();
+      expect(payload).to.have.property('id')
+        .which.is.a('string')
+        .and.equals(user._id.toString())
+      expect(payload).to.not.have.property('_id');
+    });
+
+    it('should not include email nor password', () => {
+      const user = new User();
+      user.local.email = 'my@email.com';
+      user.local.password = 'password';
+
+      const payload = user.present();
+      expect(payload).to.not.have.property('local');
+    });
+
+    it('should include all other properties', () => {
+      const user = new User();
+      user.displayName = 'Hank Pym'
+      user.state = 0;
+      user.admin = true;
+
+      const payload = user.present();
+      expect(payload).to.have.property('displayName', 'Hank Pym');
+      expect(payload).to.have.property('state', 0);
+      expect(payload).to.have.property('admin', true);
+    });
+  });
+});
+
 describe('Unit :: Users Route', () => {
   describe('Find', () => {
     describe('when no user\'s exist', () => {
@@ -110,21 +159,20 @@ describe('Unit :: Users Route', () => {
     });
 
     describe('when succeed to fetch user\'s', () => {
-      before(() => sinon.stub(User, 'find').resolves([{
-        _id: '1',
-        displayName: 'Peter Parker',
-        admin: false,
-        created_at: 'today',
-        updated_at: 'tomorrow',
-        state: 0,
-      }, {
-        _id: '2',
-        displayName: 'Spider-man',
-        admin: true,
-        created_at: 'next thursday',
-        updated_at: 'a week today',
-        state: 0,
-      }]));
+      before(() => sinon.stub(User, 'find').resolves([
+        new UserMock({
+          id: '1',
+          displayName: 'Peter Parker',
+          admin: false,
+          state: 0,
+        }),
+        new UserMock({
+          id: '2',
+          displayName: 'Spider-man',
+          admin: true,
+          state: 0,
+        }),
+      ]));
       after(() => User.find.restore());
 
       it('should set status to 200', () => {
@@ -308,12 +356,15 @@ describe('Unit :: Users Route', () => {
     });
 
     describe('when User was found', () => {
-      before(() => sinon.stub(User, 'findById').resolves({
-        _id: '5b875a9797585d0029cb886d',
-        displayName: 'Peter Parker',
-        admin: false,
-        state: 0,
-      }));
+      before(() => (
+        sinon.stub(User, 'findById')
+          .resolves(new UserMock({
+            id: '5b875a9797585d0029cb886d',
+            displayName: 'Peter Parker',
+            admin: false,
+            state: 0,
+          }))
+      ));
       after(() => User.findById.restore());
 
       it('should set status to 200', () => {
@@ -703,16 +754,15 @@ describe('Unit :: Users Route', () => {
     });
 
     describe('when succeed to update the user', () => {
-      before(() => sinon.stub(User, 'findByIdAndUpdate').resolves({
-        _id: '5b875a9797585d0029cb886d',
-        displayName: 'Peter Parker',
-        local: {
-          email: 'peter.parker@testMail.com',
-          password: 'hash',
-        },
-        admin: false,
-        state: User.States().PENDING,
-      }));
+      before(() => (
+        sinon.stub(User, 'findByIdAndUpdate')
+          .resolves(new UserMock({
+            id: '5b875a9797585d0029cb886d',
+            displayName: 'Peter Parker',
+            admin: false,
+            state: User.States().PENDING,
+          }))
+      ));
       after(() => User.findByIdAndUpdate.restore());
 
       it('should set status to 200', () => {
@@ -794,16 +844,15 @@ describe('Unit :: Users Route', () => {
     });
 
     describe('when succeed to activate user', () => {
-      before(() => sinon.stub(User, 'findByIdAndUpdate').resolves({
-        _id: '5b875a9797585d0029cb886d',
-        displayName: 'Peter Parker',
-        local: {
-          email: 'peter.parker@testMail.com',
-          password: 'hash',
-        },
-        admin: false,
-        state: User.States().ACTIVE,
-      }));
+      before(() => (
+        sinon.stub(User, 'findByIdAndUpdate')
+          .resolves(new UserMock({
+            id: '5b875a9797585d0029cb886d',
+            displayName: 'Peter Parker',
+            admin: false,
+            state: User.States().ACTIVE,
+          }))
+      ));
       after(() => User.findByIdAndUpdate.restore());
 
       it('should set status to 200', () => {
@@ -845,16 +894,15 @@ describe('Unit :: Users Route', () => {
     });
 
     describe('when succeed to de-activate user', () => {
-      before(() => sinon.stub(User, 'findByIdAndUpdate').resolves({
-        _id: '5b875a9797585d0029cb886d',
-        displayName: 'Peter Parker',
-        local: {
-          email: 'peter.parker@testMail.com',
-          password: 'hash',
-        },
-        admin: false,
-        state: User.States().PENDING,
-      }));
+      before(() => (
+        sinon.stub(User, 'findByIdAndUpdate')
+          .resolves(new UserMock({
+            id: '5b875a9797585d0029cb886d',
+            displayName: 'Peter Parker',
+            admin: false,
+            state: User.States().PENDING,
+          }))
+      ));
       after(() => User.findByIdAndUpdate.restore());
 
       it('should set status to 200', () => {
@@ -936,16 +984,15 @@ describe('Unit :: Users Route', () => {
     });
 
     describe('when succeed to promote user', () => {
-      before(() => sinon.stub(User, 'findByIdAndUpdate').resolves({
-        _id: '5b875a9797585d0029cb886d',
-        displayName: 'Peter Parker',
-        local: {
-          email: 'peter.parker@testMail.com',
-          password: 'hash',
-        },
-        admin: true,
-        state: User.States().ACTIVE,
-      }));
+      before(() => (
+        sinon.stub(User, 'findByIdAndUpdate')
+          .resolves(new UserMock({
+            id: '5b875a9797585d0029cb886d',
+            displayName: 'Peter Parker',
+            admin: true,
+            state: User.States().ACTIVE,
+          }))
+      ));
       after(() => User.findByIdAndUpdate.restore());
 
       it('should set status to 200', () => {
@@ -987,16 +1034,15 @@ describe('Unit :: Users Route', () => {
     });
 
     describe('when succeed to de-promote user', () => {
-      before(() => sinon.stub(User, 'findByIdAndUpdate').resolves({
-        _id: '5b875a9797585d0029cb886d',
-        displayName: 'Peter Parker',
-        local: {
-          email: 'peter.parker@testMail.com',
-          password: 'hash',
-        },
-        admin: false,
-        state: User.States().ACTIVE,
-      }));
+      before(() => (
+        sinon.stub(User, 'findByIdAndUpdate')
+          .resolves(new UserMock({
+            id: '5b875a9797585d0029cb886d',
+            displayName: 'Peter Parker',
+            admin: false,
+            state: User.States().ACTIVE,
+          }))
+      ));
       after(() => User.findByIdAndUpdate.restore());
 
       it('should set status to 200', () => {
