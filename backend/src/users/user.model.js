@@ -89,7 +89,7 @@ schema.methods.present = function () {
     admin: this.admin,
     state: this.state,
   };
-}
+};
 
 schema.statics.States = () => ({
   PENDING: 0,

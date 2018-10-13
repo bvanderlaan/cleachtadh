@@ -41,19 +41,6 @@ const createResponse = () => {
   return res;
 };
 
-class UserMock {
-  constructor({ id, displayName, admin, state }) {
-    this.id = id;
-    this.displayName = displayName;
-    this.admin = admin;
-    this.state = state;
-  }
-
-  present() {
-    return this;
-  }
-}
-
 describe('Unit :: Admin Route', () => {
   describe('Create', () => {
     describe('when missing the display name parameter', () => {

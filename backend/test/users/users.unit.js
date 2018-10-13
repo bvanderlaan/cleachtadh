@@ -62,7 +62,7 @@ describe('Unit :: Users Model', () => {
       const payload = user.present();
       expect(payload).to.have.property('id')
         .which.is.a('string')
-        .and.equals(user._id.toString())
+        .and.equals(user._id.toString());
       expect(payload).to.not.have.property('_id');
     });
 
@@ -77,7 +77,7 @@ describe('Unit :: Users Model', () => {
 
     it('should include all other properties', () => {
       const user = new User();
-      user.displayName = 'Hank Pym'
+      user.displayName = 'Hank Pym';
       user.state = 0;
       user.admin = true;
 
