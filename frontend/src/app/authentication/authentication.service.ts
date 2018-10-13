@@ -18,6 +18,7 @@ interface User {
 export class AuthenticationService {
   public token: string;
   public displayName: string;
+  private admin: boolean;
 
   public userLogInStateSignal = new BehaviorSubject<string>('');
 
@@ -25,14 +26,15 @@ export class AuthenticationService {
     this.loadCurrentUser();
   }
 
-  setCurrentUser(displayName: string, token: string) {
+  setCurrentUser(displayName: string, token: string, admin: boolean) {
     const bearer = token.startsWith('Bearer ')
       ? ''
       : 'Bearer ';
 
     this.token = `${bearer}${token}`;
     this.displayName = displayName;
-    localStorage.setItem('currentUser', JSON.stringify({ displayName, token: this.token }));
+    this.admin = admin;
+    localStorage.setItem('currentUser', JSON.stringify({ displayName, token: this.token, admin }));
     this.announceUserLogInStateChanged()
   }
 
@@ -43,7 +45,7 @@ export class AuthenticationService {
 
     return this.http.post<User>(`${AppSettings.API_ENDPOINT}/v1/authenticate`, bodyString, options)
       .pipe(
-        tap(user => this.setCurrentUser(user.displayName, user.token)),
+        tap(user => this.setCurrentUser(user.displayName, user.token, user.admin)),
         catchError((error: Response) => {
           return throwError(`Failed to login: ${error.statusText}`);
         }),
@@ -52,6 +54,10 @@ export class AuthenticationService {
 
   isLoggedIn() {
     return !!this.userLogInStateSignal.value;
+  }
+
+  isAdmin() {
+    return this.admin;
   }
 
   logout() {
@@ -69,9 +75,10 @@ export class AuthenticationService {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     const displayName = currentUser && currentUser.displayName || '';
     const token = currentUser && currentUser.token || '';
+    const admin = !!(currentUser && currentUser.admin);
 
     if (displayName && token) {
-      this.setCurrentUser(displayName, token);
+      this.setCurrentUser(displayName, token, admin);
     }
   }
 }

@@ -9,7 +9,7 @@ import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { RootComponent } from './root/root.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { AuthenticationGuard } from './authentication/authentication.guard';
+import { AuthenticationGuard, AdminGuard } from './authentication';
 
 const markedOptions = {
   provide: MarkedOptions,
@@ -46,7 +46,7 @@ const markedOptions = {
     HttpClientModule,
     MarkdownModule.forRoot({ markedOptions }),
   ],
-  providers: [AuthenticationGuard],
+  providers: [AuthenticationGuard, AdminGuard],
   bootstrap: [RootComponent]
 })
 export class AppModule { }
