@@ -13,24 +13,27 @@ const doesAdminExist = () => (
 module.exports = {
   create(req, res) {
     if (!req.body.displayName) {
-      return res.status(400)
+      res.status(400)
         .json({
-          message: 'Missing admin display name',
+          message: 'Error: Missing admin display name',
         });
+      return Promise.resolve();
     }
 
     if (!req.body.email) {
-      return res.status(400)
+      res.status(400)
         .json({
-          message: 'Missing admin email address',
+          message: 'Error: Missing admin email address',
         });
+      return Promise.resolve();
     }
 
     if (!req.body.password) {
-      return res.status(400)
+      res.status(400)
         .json({
-          message: 'Missing admin password',
+          message: 'Error: Missing admin password',
         });
+      return Promise.resolve();
     }
 
     const newAdmin = new User();
@@ -38,12 +41,13 @@ module.exports = {
     newAdmin.local.password = req.body.password;
     newAdmin.displayName = req.body.displayName;
     newAdmin.admin = true;
+    newAdmin.state = User.States().ACTIVE;
 
     return newAdmin.save()
       .then(() => res.status(201).end())
       .catch((err) => {
         req.log.error({ err }, 'Failed to create Admin');
-        res.status(500).json({ message: 'Failed to create Admin' });
+        res.status(500).json({ message: 'Error: Failed to create Admin' });
       });
   },
 
