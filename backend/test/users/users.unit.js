@@ -476,6 +476,46 @@ describe('Unit :: Users Route', () => {
           });
       });
     });
+
+    describe('when User to delete is self', () => {
+      before(() => sinon.stub(User, 'findByIdAndDelete').resolves());
+      after(() => User.findByIdAndDelete.restore());
+
+      it('should set status to 400', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.user.id = '5b875a9797585d0029cb886d';
+
+        return expect(userController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(400);
+          });
+      });
+
+      it('should return error message in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.user.id = '5b875a9797585d0029cb886d';
+
+        return expect(userController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Can not delete your self',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/delete_api_v1_users__id_/),
+            });
+          });
+      });
+    });
   });
 
   describe('Update', () => {

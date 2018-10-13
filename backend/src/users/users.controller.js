@@ -195,6 +195,14 @@ module.exports = {
       return Promise.resolve();
     }
 
+    if (req.params.id === req.user.id) {
+      res.status(400).json({
+        message: 'Error: Can not delete your self',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
     return User.findByIdAndDelete(sanitize(req.params.id))
       .then(() => res.status(204).end())
       .catch((err) => {
