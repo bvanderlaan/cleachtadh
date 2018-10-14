@@ -58,9 +58,9 @@ module.exports = {
    */
   login(req, res) {
     const token = req.user.generateJwt();
-    const displayName = req.user.displayName;
+    const user = req.user.present();
 
     res.status(200)
-      .json({ displayName, token, admin: req.user.admin });
+      .json({ ...user, token });
   },
 };
