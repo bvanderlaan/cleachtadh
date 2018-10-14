@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Response } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -25,8 +24,8 @@ export class AddKataService {
     };
 
     return this.http.post<Kata>(`${AppSettings.API_ENDPOINT}/v1/katas`, kata, httpOptions)
-      .pipe(catchError((error: Response) => {
-        return throwError(`Failed to add Kata: ${error.statusText}`);
+      .pipe(catchError((res: HttpErrorResponse) => {
+        return throwError(`Failed to add Kata: ${res.error.message || res.statusText}`);
       }));
   }
 }

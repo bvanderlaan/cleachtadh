@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Response } from '@angular/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -18,8 +17,8 @@ export class KataListService {
   getKatas() : Observable<Kata[]> {
     return this.http.get<Katas>(`${AppSettings.API_ENDPOINT}/v1/katas`)
       .pipe(map(data => data.katas),
-        catchError((error: Response) => {
-          console.error(`GET Katas Failed: ${error.statusText}`);
+        catchError((res: HttpErrorResponse) => {
+          console.error(`GET Katas Failed: ${res.error.message || res.statusText}`);
           return of([]);
         }));
   }

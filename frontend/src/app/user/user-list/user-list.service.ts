@@ -26,7 +26,7 @@ export class UserListService {
     return this.http.get<Users>(`${AppSettings.API_ENDPOINT}/v1/users`, httpOptions)
       .pipe(map(data => data.users),
         catchError((res: HttpErrorResponse) => {
-          console.error(`GET Users Failed: ${res.error.message}`);
+          console.error(`GET Users Failed: ${res.error.message || res.statusText}`);
           return of([]);
         }));
   }
@@ -41,7 +41,7 @@ export class UserListService {
 
     return this.http.put<User>(`${AppSettings.API_ENDPOINT}/v1/users/${user.id}`, user, httpOptions)
       .pipe(catchError((res: HttpErrorResponse) => {
-        return throwError(`Failed to update User: ${res.error.message}`);
+        return throwError(`Failed to update User: ${res.error.message || res.statusText}`);
       }));
   }
 }

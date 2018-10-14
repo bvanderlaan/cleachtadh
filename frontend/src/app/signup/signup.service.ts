@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Response } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -21,8 +20,8 @@ export class SignupService {
 
     return this.http.post(`${AppSettings.API_ENDPOINT}/v1/signup`, bodyString, options)
       .pipe(
-        catchError((error: Response) => {
-          return throwError(`Failed to sign up: ${error.statusText}`);
+        catchError((res: HttpErrorResponse) => {
+          return throwError(`Failed to sign up: ${res.error.message || res.statusText}`);
         }),
       );
   }

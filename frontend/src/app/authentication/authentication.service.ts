@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Response } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -47,8 +46,8 @@ export class AuthenticationService {
     return this.http.post<User>(`${AppSettings.API_ENDPOINT}/v1/authenticate`, bodyString, options)
       .pipe(
         tap(user => this.setCurrentUser(user.displayName, user.token, user.admin)),
-        catchError((error: Response) => {
-          return throwError(`Failed to login: ${error.statusText}`);
+        catchError((res: HttpErrorResponse) => {
+          return throwError(`Failed to login: ${res.error.message || res.statusText}`);
         }),
       );
   }

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Response } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -18,8 +17,8 @@ export class KataService {
 
   getKata(id: string) : Observable<Kata> {
     return this.http.get<Kata>(`${AppSettings.API_ENDPOINT}/v1/katas/${id}`)
-      .pipe(catchError((error: Response) => {
-        console.error(`GET Kata Failed: ${error.statusText}`);
+      .pipe(catchError((res: HttpErrorResponse) => {
+        console.error(`GET Kata Failed: ${res.error.message || res.statusText}`);
         return of(new Kata('',''));
       }));
   }
@@ -32,8 +31,8 @@ export class KataService {
     };
 
     return this.http.delete(`${AppSettings.API_ENDPOINT}/v1/katas/${id}`, httpOptions)
-      .pipe(catchError((error: Response) => {
-        console.error(`DELETE Kata Failed: ${error.statusText}`);
+      .pipe(catchError((res: HttpErrorResponse) => {
+        console.error(`DELETE Kata Failed: ${res.error.message || res.statusText}`);
         return of(null);
       }));
   }
@@ -47,8 +46,8 @@ export class KataService {
     };
 
     return this.http.put<Kata>(`${AppSettings.API_ENDPOINT}/v1/katas/${kata.id}`, kata, httpOptions)
-      .pipe(catchError((error: Response) => {
-        return throwError(`Failed to update Kata: ${error.statusText}`);
+      .pipe(catchError((res: HttpErrorResponse) => {
+        return throwError(`Failed to update Kata: ${res.error.message || res.statusText}`);
       }));
   }
 }
