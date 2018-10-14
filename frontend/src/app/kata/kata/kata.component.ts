@@ -64,8 +64,8 @@ export class KataComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.authService.userLogInStateSignal.subscribe((currentUserDisplayName) => {
-      this.loggedIn = !!currentUserDisplayName;
+    this.authService.userLogInStateSignal.subscribe((currentUser) => {
+      this.loggedIn = !!currentUser.displayName;
     });
 
     this.routeParamsSubscription = this.route.params.subscribe((params) => {

@@ -33,10 +33,10 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.userLogInStateSignal.subscribe((currentUserDisplayName) => {
-      this.loggedIn = !!currentUserDisplayName;
-      this.currentUserDisplayName = currentUserDisplayName;
-      this.isAdmin = this.authService.isAdmin();
+    this.authService.userLogInStateSignal.subscribe((currentUser) => {
+      this.loggedIn = !!currentUser.displayName;
+      this.currentUserDisplayName = currentUser.displayName;
+      this.isAdmin = currentUser.admin;
     });
 
     $(document).ready(() => {

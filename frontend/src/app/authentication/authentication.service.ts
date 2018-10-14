@@ -17,14 +17,21 @@ interface User {
   providedIn: 'root'
 })
 export class AuthenticationService {
-  public token: string;
-  public displayName: string;
-  public id: string;
-  private admin: boolean;
-
-  public userLogInStateSignal = new BehaviorSubject<string>('');
+  private currentUser: User;
+  public userLogInStateSignal = new BehaviorSubject<User>({
+    id: '',
+    displayName: '',
+    token: '',
+    admin: false,
+  });
 
   constructor(private http: HttpClient) {
+    this.currentUser = {
+      id: '',
+      displayName: '',
+      token: '',
+      admin: false,
+    };
     this.loadCurrentUser();
   }
 
@@ -33,11 +40,16 @@ export class AuthenticationService {
       ? ''
       : 'Bearer ';
 
-    this.token = `${bearer}${token}`;
-    this.id = id;
-    this.displayName = displayName;
-    this.admin = admin;
-    localStorage.setItem('currentUser', JSON.stringify({ id, displayName, token: this.token, admin }));
+    this.currentUser.token = `${bearer}${token}`;
+    this.currentUser.id = id;
+    this.currentUser.displayName = displayName;
+    this.currentUser.admin = admin;
+    localStorage.setItem('currentUser', JSON.stringify({
+      id,
+      displayName,
+      admin,
+      token: this.currentUser.token
+    }));
     this.announceUserLogInStateChanged()
   }
 
@@ -60,18 +72,23 @@ export class AuthenticationService {
   }
 
   isAdmin() {
-    return this.admin;
+    return this.currentUser.admin;
+  }
+
+  get token() {
+    return this.currentUser.token;
   }
 
   logout() {
-    this.displayName = '';
-    this.token = '';
+    this.currentUser.displayName = '';
+    this.currentUser.token = '';
+    this.currentUser.id = '';
     localStorage.removeItem('currentUser');
     this.announceUserLogInStateChanged();
   }
 
   private announceUserLogInStateChanged() {
-    this.userLogInStateSignal.next(this.displayName);
+    this.userLogInStateSignal.next(this.currentUser);
   }
 
   private loadCurrentUser() {

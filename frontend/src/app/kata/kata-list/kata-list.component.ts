@@ -21,8 +21,8 @@ export class KataListComponent implements OnInit {
   ngOnInit() {
     this.service.getKatas().subscribe(katas => (this.katas = katas));
 
-    this.authService.userLogInStateSignal.subscribe((currentUserDisplayName) => {
-      this.loggedIn = !!currentUserDisplayName;
+    this.authService.userLogInStateSignal.subscribe((currentUser) => {
+      this.loggedIn = !!currentUser.displayName;
     });
   }
 
