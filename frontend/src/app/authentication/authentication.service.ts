@@ -7,6 +7,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { AppSettings } from '../app.settings';
 
 interface User {
+  id: string;
   displayName: string;
   token: string;
   admin: boolean;
@@ -18,6 +19,7 @@ interface User {
 export class AuthenticationService {
   public token: string;
   public displayName: string;
+  public id: string;
   private admin: boolean;
 
   public userLogInStateSignal = new BehaviorSubject<string>('');
@@ -26,15 +28,16 @@ export class AuthenticationService {
     this.loadCurrentUser();
   }
 
-  setCurrentUser(displayName: string, token: string, admin: boolean) {
+  setCurrentUser(id: string, displayName: string, token: string, admin: boolean) {
     const bearer = token.startsWith('Bearer ')
       ? ''
       : 'Bearer ';
 
     this.token = `${bearer}${token}`;
+    this.id = id;
     this.displayName = displayName;
     this.admin = admin;
-    localStorage.setItem('currentUser', JSON.stringify({ displayName, token: this.token, admin }));
+    localStorage.setItem('currentUser', JSON.stringify({ id, displayName, token: this.token, admin }));
     this.announceUserLogInStateChanged()
   }
 
@@ -45,7 +48,7 @@ export class AuthenticationService {
 
     return this.http.post<User>(`${AppSettings.API_ENDPOINT}/v1/authenticate`, bodyString, options)
       .pipe(
-        tap(user => this.setCurrentUser(user.displayName, user.token, user.admin)),
+        tap(user => this.setCurrentUser(user.id, user.displayName, user.token, user.admin)),
         catchError((res: HttpErrorResponse) => {
           return throwError(`Failed to login: ${res.error.message || res.statusText}`);
         }),
@@ -76,9 +79,10 @@ export class AuthenticationService {
     const displayName = currentUser && currentUser.displayName || '';
     const token = currentUser && currentUser.token || '';
     const admin = !!(currentUser && currentUser.admin);
+    const id = currentUser && currentUser.id;
 
-    if (displayName && token) {
-      this.setCurrentUser(displayName, token, admin);
+    if (id && displayName && token) {
+      this.setCurrentUser(id, displayName, token, admin);
     }
   }
 }
