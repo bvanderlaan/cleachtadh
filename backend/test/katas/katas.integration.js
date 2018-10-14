@@ -35,7 +35,10 @@ const createResponse = () => {
     json: sinon.stub(),
     status: sinon.stub(),
   };
-  res.status.returns(res);
+  res.status.callsFake(() => {
+    res.headersSent = true;
+    return res;
+  });
 
   return res;
 };
@@ -316,6 +319,7 @@ describe('Integration :: Katas Route', () => {
         const res = createResponse();
         const next = sinon.stub();
 
+        req.user.id = 'myUserId';
         req.params.id = kataId;
 
         return expect(kataController.destroy(req, res, next))

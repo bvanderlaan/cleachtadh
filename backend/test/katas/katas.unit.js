@@ -35,7 +35,10 @@ const createResponse = () => {
     json: sinon.stub(),
     status: sinon.stub(),
   };
-  res.status.returns(res);
+  res.status.callsFake(() => {
+    res.headersSent = true;
+    return res;
+  });
 
   return res;
 };
@@ -578,6 +581,9 @@ describe('Unit :: Katas Route', () => {
     });
 
     describe('when the kata does not exist', () => {
+      before(() => sinon.stub(Kata, 'findById').resolves(null));
+      after(() => Kata.findById.restore());
+
       it('should set status to 204', () => {
         const req = createRequest();
         const res = createResponse();
@@ -595,14 +601,28 @@ describe('Unit :: Katas Route', () => {
     });
 
     describe('when failed to delete the kata', () => {
-      before(() => sinon.stub(Kata, 'findByIdAndDelete').rejects(new Error('boom')));
-      after(() => Kata.findByIdAndDelete.restore());
+      before(() => {
+        sinon.stub(Kata, 'findById').resolves({
+          _id: '5b875a9797585d0029cb886d',
+          name: 'my cool kata',
+          description: 'this is how we do it',
+          addedById: '1234',
+          addedByName: 'Peter Parker',
+          created_at: 'today',
+          updated_at: 'tomorrow',
+          remove() {
+            return Promise.reject(new Error('boom'));
+          },
+        });
+      });
+      after(() => Kata.findById.restore());
 
       it('should set status to 500', () => {
         const req = createRequest();
         const res = createResponse();
         const next = sinon.stub();
 
+        req.user.id = '1234';
         req.params.id = '5b875a9797585d0029cb886d';
 
         return expect(kataController.destroy(req, res, next))
@@ -618,6 +638,7 @@ describe('Unit :: Katas Route', () => {
         const res = createResponse();
         const next = sinon.stub();
 
+        req.user.id = '1234';
         req.params.id = '5b875a9797585d0029cb886d';
 
         return expect(kataController.destroy(req, res, next))
@@ -632,15 +653,117 @@ describe('Unit :: Katas Route', () => {
       });
     });
 
-    describe('when Kata was found', () => {
-      before(() => sinon.stub(Kata, 'findByIdAndDelete').resolves());
-      after(() => Kata.findByIdAndDelete.restore());
+    describe('when Kata was successfully deleted', () => {
+      before(() => {
+        sinon.stub(Kata, 'findById').resolves({
+          _id: '5b875a9797585d0029cb886d',
+          name: 'my cool kata',
+          description: 'this is how we do it',
+          addedById: '1234',
+          addedByName: 'Peter Parker',
+          created_at: 'today',
+          updated_at: 'tomorrow',
+          remove() {
+            return Promise.resolve();
+          },
+        });
+      });
+      after(() => Kata.findById.restore());
 
       it('should set status to 204', () => {
         const req = createRequest();
         const res = createResponse();
         const next = sinon.stub();
 
+        req.user.id = '1234';
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(204);
+          });
+      });
+    });
+
+    describe('when Kata does not belong to the user', () => {
+      before(() => {
+        sinon.stub(Kata, 'findById').resolves({
+          _id: '5b875a9797585d0029cb886d',
+          name: 'my cool kata',
+          description: 'this is how we do it',
+          addedById: '1234',
+          addedByName: 'Peter Parker',
+          created_at: 'today',
+          updated_at: 'tomorrow',
+          delete() {
+            return Promise.resolve();
+          },
+        });
+      });
+      after(() => Kata.findById.restore());
+
+      it('should set status to 401', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.user.id = '999999';
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(401);
+          });
+      });
+
+      it('should return kata in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.user.id = '999999';
+        req.params.id = '5b875a9797585d0029cb886d';
+
+        return expect(kataController.destroy(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Failed to delete the kata',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/delete_api_v1_katas__id_/),
+            });
+          });
+      });
+    });
+
+    describe('when Kata does not belong to the admin user', () => {
+      before(() => {
+        sinon.stub(Kata, 'findById').resolves({
+          _id: '5b875a9797585d0029cb886d',
+          name: 'my cool kata',
+          description: 'this is how we do it',
+          addedById: '1234',
+          addedByName: 'Peter Parker',
+          created_at: 'today',
+          updated_at: 'tomorrow',
+          remove() {
+            return Promise.resolve();
+          },
+        });
+      });
+      after(() => Kata.findById.restore());
+
+      it('should set status to 204', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.user.id = '999999';
+        req.user.admin = true;
         req.params.id = '5b875a9797585d0029cb886d';
 
         return expect(kataController.destroy(req, res, next))

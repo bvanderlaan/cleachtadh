@@ -262,8 +262,27 @@ module.exports = {
       return Promise.resolve();
     }
 
-    return Kata.findByIdAndDelete(sanitize(req.params.id))
-      .then(() => res.status(204).end())
+    return Kata.findById(sanitize(req.params.id))
+      .then((kata) => {
+        if (!kata) {
+          return Promise.resolve();
+        }
+
+        if (!req.user.admin && (kata.addedById !== req.user.id)) {
+          res.status(401).json({
+            message: 'Error: Failed to delete the kata',
+            moreInfo: helpURL.toString(),
+          });
+          return Promise.resolve();
+        }
+
+        return kata.remove();
+      })
+      .then(() => {
+        if (!res.headersSent) {
+          res.status(204).end()
+        }
+      })
       .catch((err) => {
         req.log.error({ err, kataId: req.params.id }, 'Failed to delete the kata');
         res.status(500).json({
