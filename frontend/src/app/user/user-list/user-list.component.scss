@@ -1,0 +1,17 @@
+@import "~bootstrap/scss/bootstrap";
+
+.user {
+  border-bottom: 1px solid #E7E7E7;
+
+  .row {
+    padding: 5px;
+
+    &:hover {
+      background-color: #C9CEDD;
+    }
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+}

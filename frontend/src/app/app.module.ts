@@ -4,6 +4,7 @@ import { FormsModule }   from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
+import { UiSwitchModule } from 'ngx-ui-switch';
 
 import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { RootComponent } from './root/root.component';
@@ -45,6 +46,7 @@ const markedOptions = {
     FormsModule,
     HttpClientModule,
     MarkdownModule.forRoot({ markedOptions }),
+    UiSwitchModule,
   ],
   providers: [AuthenticationGuard, AdminGuard],
   bootstrap: [RootComponent]

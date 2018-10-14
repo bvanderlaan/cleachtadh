@@ -1,0 +1,27 @@
+<div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissable mx-auto">
+    <button class="close" (click)="clearError()" aria-label="close">&times;</button>
+    <strong>Oops:</strong> {{error}}.
+  </div>
+  <div *ngFor="let user of users">
+    <div class="user">
+      <div class="container-fluid">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6">
+              {{user.displayName}}
+            </div>
+            <div class="col-4">
+                <ui-switch
+                  checkedLabel="Active"
+                  uncheckedLabel="Pending"
+                  [(ngModel)]="user.state"
+                  (ngModelChange)="changeState(user)"></ui-switch>
+            </div>
+            <div *ngIf="user.admin" class="col-2">
+              <span class="badge badge-info">Admin</span>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

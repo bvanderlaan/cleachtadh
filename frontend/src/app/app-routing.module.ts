@@ -11,6 +11,7 @@ import {
   KataComponent,
   KataListComponent,
 } from './kata';
+import { UserListComponent } from './user';
 
 const routes: Routes = [{
     path: '',
@@ -32,6 +33,10 @@ const routes: Routes = [{
     path: 'signup',
     component: SignupComponent,
   }, {
+    path: 'users',
+    component: UserListComponent,
+    canActivate: [AuthenticationGuard, AdminGuard],
+  }, {
     path: '**',
     redirectTo: '',
   }
@@ -50,4 +55,5 @@ export const routingComponents = [
   AddKataComponent,
   KataComponent,
   KataListComponent,
+  UserListComponent,
 ];
