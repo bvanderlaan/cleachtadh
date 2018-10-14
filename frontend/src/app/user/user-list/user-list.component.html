@@ -8,7 +8,7 @@
       <div class="container-fluid">
           <div class="row">
             <div class="col-xs-12 col-sm-6">
-              {{user.displayName}}
+              {{user.displayName}} <span *ngIf="user.id === currentUserId" class="badge badge-primary">You</span>
             </div>
             <div class="col-4">
                 <ui-switch

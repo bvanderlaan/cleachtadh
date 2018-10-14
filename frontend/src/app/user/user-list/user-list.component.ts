@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../user.model';
 import { UserListService } from './user-list.service';
 
+import { AuthenticationService } from '../../authentication';
+
 @Component({
   selector: 'user-list',
   templateUrl: './user-list.component.html',
@@ -11,14 +13,19 @@ import { UserListService } from './user-list.service';
 export class UserListComponent implements OnInit {
   private users: User[];
   public error: string;
+  public currentUserId: string;
 
-  constructor(private service: UserListService) {
+  constructor(private service: UserListService, private authService: AuthenticationService) {
     this.users = [];
     this.error = '';
+    this.currentUserId = '';
   }
 
   ngOnInit() {
     this.service.getUsers().subscribe(users => (this.users = users));
+    this.authService.userLogInStateSignal.subscribe((currentUser) => {
+      this.currentUserId = currentUser.id;
+    });
   }
 
   clearError() {
