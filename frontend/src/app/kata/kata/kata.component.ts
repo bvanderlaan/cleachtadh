@@ -5,6 +5,11 @@ import { KataService } from './kata.service';
 import { Kata } from '../kata.model';
 import { AuthenticationService } from '../../authentication';
 
+interface User {
+  admin: boolean,
+  id: string,
+}
+
 @Component({
   selector: 'app-kata',
   templateUrl: './kata.component.html',
@@ -14,8 +19,8 @@ export class KataComponent implements OnInit, OnDestroy {
   private routeParamsSubscription
   private kata: Kata;
   private cachedKata: Kata;
+  private currentUser: User;
   public isEditing: boolean;
-  public loggedIn: boolean;
   public error: string;
   public message: string;
 
@@ -24,7 +29,7 @@ export class KataComponent implements OnInit, OnDestroy {
     this.message = '';
     this.kata = new Kata('', '');
     this.isEditing = false;
-    this.loggedIn = false;
+    this.currentUser;
   }
 
   clearError() {
@@ -33,6 +38,10 @@ export class KataComponent implements OnInit, OnDestroy {
 
   clearMessage() {
     this.message = '';
+  }
+
+  get canEdit() {
+    return this.currentUser && (this.currentUser.admin || (this.currentUser.id === this.kata.addedBy.id));
   }
 
   edit() {
@@ -65,7 +74,9 @@ export class KataComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.userLogInStateSignal.subscribe((currentUser) => {
-      this.loggedIn = !!currentUser.displayName;
+      currentUser.id
+        ? this.currentUser = currentUser
+        : this.currentUser = null;
     });
 
     this.routeParamsSubscription = this.route.params.subscribe((params) => {

@@ -10,7 +10,7 @@
   <div class="container-fluid" *ngIf="!isEditing">
     <div class="row">
       <h3>{{kata.name}}</h3>
-      <button id="editButton" *ngIf="loggedIn" class="btn btn-outline-primary" (click)="edit()">
+      <button id="editButton" *ngIf="canEdit" class="btn btn-outline-primary" (click)="edit()">
         <i class="fa fa-edit"></i>
       </button>
       <div id="added-by">
@@ -22,7 +22,7 @@
       <markdown ngPreserveWhitespaces [data]="kata.description"></markdown>
     </div>
     <div class="row">
-      <button id="deleteButton" *ngIf="loggedIn" class="btn btn-danger float-right" (click)="delete()">Delete Kata</button>
+      <button id="deleteButton" *ngIf="canEdit" class="btn btn-danger float-right" (click)="delete()">Delete Kata</button>
     </div>
   </div>
   <form (ngSubmit)="updateKata()" #kataForm="ngForm" *ngIf="isEditing">
