@@ -943,6 +943,56 @@ describe('Unit :: Users Route', () => {
       });
     });
 
+    describe('when trying to de-activate self', () => {
+      before(() => (
+        sinon.stub(User, 'findByIdAndUpdate')
+          .resolves(new UserMock({
+            id: '5b875a9797585d0029cb886d',
+            displayName: 'Peter Parker',
+            admin: false,
+            state: User.States().ACTIVE,
+          }))
+      ));
+      after(() => User.findByIdAndUpdate.restore());
+
+      it('should set status to 400', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.user.id = '5b875a9797585d0029cb886d';
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.state = User.States().PENDING;
+
+        return expect(userController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.status, 'status').to.have.been.calledOnce;
+            expect(res.status, 'status').to.have.been.calledWith(400);
+          });
+      });
+
+      it('should return error message in json body', () => {
+        const req = createRequest();
+        const res = createResponse();
+        const next = sinon.stub();
+
+        req.user.id = '5b875a9797585d0029cb886d';
+        req.params.id = '5b875a9797585d0029cb886d';
+        req.body.state = User.States().PENDING;
+
+        return expect(userController.update(req, res, next))
+          .to.eventually.be.fulfilled
+          .then(() => {
+            expect(res.json, 'json').to.have.been.calledOnce;
+            expect(res.json, 'json').to.have.been.calledWith({
+              message: 'Error: Can not deactivate ones self',
+              moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/patch_api_v1_users__id_/),
+            });
+          });
+      });
+    });
+
     describe('when invalid admin value provided', () => {
       before(() => sinon.stub(User, 'findByIdAndUpdate').resolves(null));
       after(() => User.findByIdAndUpdate.restore());

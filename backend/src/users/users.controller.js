@@ -300,6 +300,14 @@ module.exports = {
         return Promise.resolve();
       }
 
+      if ((userId === req.user.id) && (state === User.States().PENDING)) {
+        res.status(400).json({
+          message: 'Error: Can not deactivate ones self',
+          moreInfo: helpURL.toString(),
+        });
+        return Promise.resolve();
+      }
+
       data.state = state;
     }
 
