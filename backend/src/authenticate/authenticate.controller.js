@@ -61,6 +61,6 @@ module.exports = {
     const displayName = req.user.displayName;
 
     res.status(200)
-      .json({ displayName, token });
+      .json({ displayName, token, admin: req.user.admin });
   },
 };

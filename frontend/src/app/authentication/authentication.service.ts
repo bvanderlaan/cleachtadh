@@ -10,6 +10,7 @@ import { AppSettings } from '../app.settings';
 interface User {
   displayName: string;
   token: string;
+  admin: boolean;
 }
 
 @Injectable({

@@ -23,10 +23,12 @@ const toggleOverlay = (mutations) => {
 export class HeaderComponent implements OnInit {
   private menuObserver;
   public loggedIn: boolean;
+  public isAdmin: boolean
   public currentUserDisplayName: string;
 
   constructor(private authService: AuthenticationService) {
     this.loggedIn = false;
+    this.isAdmin = false;
     this.currentUserDisplayName = '';
   }
 
@@ -34,6 +36,7 @@ export class HeaderComponent implements OnInit {
     this.authService.userLogInStateSignal.subscribe((currentUserDisplayName) => {
       this.loggedIn = !!currentUserDisplayName;
       this.currentUserDisplayName = currentUserDisplayName;
+      this.isAdmin = this.authService.isAdmin();
     });
 
     $(document).ready(() => {
