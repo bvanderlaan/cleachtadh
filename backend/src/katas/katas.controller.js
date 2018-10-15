@@ -127,7 +127,7 @@ module.exports = {
       .then((response) => {
         const katas = (response.docs || response).map(presentKata);
 
-        return res.status(200).json({ katas });
+        return res.status(200).json({ katas, total: response.total });
       })
       .catch((err) => {
         req.log.error({ err }, 'Failed to retrieve katas');

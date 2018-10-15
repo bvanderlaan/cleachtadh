@@ -71,6 +71,7 @@ describe('Integration :: Katas Route', () => {
             expect(res.json, 'json').to.have.been.calledOnce;
             expect(res.json, 'json').to.have.been.calledWith({
               katas: [],
+              total: undefined,
             });
           });
       });
@@ -149,6 +150,7 @@ describe('Integration :: Katas Route', () => {
                 },
                 created_at: sinon.match.date,
               }],
+              total: undefined,
             });
           });
       });
@@ -223,6 +225,7 @@ describe('Integration :: Katas Route', () => {
                   },
                   created_at: sinon.match.date,
                 }],
+                total: 2,
               });
             });
         });
@@ -298,6 +301,7 @@ describe('Integration :: Katas Route', () => {
                   },
                   created_at: sinon.match.date,
                 }],
+                total: 2,
               });
             });
         });

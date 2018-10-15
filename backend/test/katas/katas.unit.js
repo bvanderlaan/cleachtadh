@@ -74,6 +74,7 @@ describe('Unit :: Katas Route', () => {
             expect(res.json, 'json').to.have.been.calledOnce;
             expect(res.json, 'json').to.have.been.calledWith({
               katas: [],
+              total: undefined,
             });
           });
       });
@@ -316,6 +317,7 @@ describe('Unit :: Katas Route', () => {
             created_at: 'next thursday',
             updated_at: 'a week today',
           }],
+          total: 2,
         }));
         after(() => Kata.paginate.restore());
 
@@ -367,6 +369,7 @@ describe('Unit :: Katas Route', () => {
                   },
                   created_at: 'next thursday',
                 }],
+                total: 2,
               });
             });
         });
@@ -435,6 +438,7 @@ describe('Unit :: Katas Route', () => {
                 },
                 created_at: 'next thursday',
               }],
+              total: undefined,
             });
           });
       });
