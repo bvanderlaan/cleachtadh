@@ -15,6 +15,7 @@ const createRequest = () => {
   const req = {
     body: {},
     params: {},
+    query: {},
     user: {
       _id: '1234',
       displayName: 'Peter Parker',
@@ -155,6 +156,255 @@ describe('Unit :: Users Route', () => {
               moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/get_api_v1_users/),
             });
           });
+      });
+    });
+
+    describe('Pagination', () => {
+      describe('Limit', () => {
+        describe('when invalid value', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = 'not-a-number';
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = 'not-a-number';
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid limit value: not-a-number',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/get_api_v1_users/),
+                });
+              });
+          });
+        });
+
+        describe('when negative', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = -5;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = -5;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid limit value: -5',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/get_api_v1_users/),
+                });
+              });
+          });
+        });
+      });
+
+      describe('Page', () => {
+        describe('when invalid value', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 'not-a-number';
+            req.query.limit = 10;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 'not-a-number';
+            req.query.limit = 10;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid page value: not-a-number',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/get_api_v1_users/),
+                });
+              });
+          });
+        });
+
+        describe('when negative', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = -5;
+            req.query.limit = 10;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = -5;
+            req.query.limit = 10;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid page value: -5',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/get_api_v1_users/),
+                });
+              });
+          });
+        });
+
+        describe('when valid but missing limit', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 5;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 5;
+
+            return expect(userController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Missing limit value',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/users\/get_api_v1_users/),
+                });
+              });
+          });
+        });
+      });
+
+      describe('when succeed to fetch user\'s', () => {
+        before(() => sinon.stub(User, 'paginate').resolves({
+          docs: [
+            new UserMock({
+              id: '1',
+              displayName: 'Peter Parker',
+              admin: false,
+              state: 0,
+            }),
+            new UserMock({
+              id: '2',
+              displayName: 'Spider-man',
+              admin: true,
+              state: 0,
+            }),
+          ],
+        }));
+        after(() => User.paginate.restore());
+
+        it('should set status to 200', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.limit = 2;
+          req.query.page = 2;
+
+          return expect(userController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.status, 'status').to.have.been.calledOnce;
+              expect(res.status, 'status').to.have.been.calledWith(200);
+            });
+        });
+
+        it('should return users in json body', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.limit = 2;
+          req.query.page = 2;
+
+          return expect(userController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.json, 'json').to.have.been.calledOnce;
+              expect(res.json, 'json').to.have.been.calledWith({
+                users: [{
+                  id: '1',
+                  displayName: 'Peter Parker',
+                  admin: false,
+                  state: 0,
+                }, {
+                  id: '2',
+                  displayName: 'Spider-man',
+                  admin: true,
+                  state: 0,
+                }],
+              });
+            });
+        });
       });
     });
 

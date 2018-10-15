@@ -378,22 +378,22 @@ describe('Unit :: Katas Route', () => {
 
     describe('when succeed to fetch kata\'s', () => {
       before(() => sinon.stub(Kata, 'find').resolves([{
-          _id: '1',
-          name: 'first kata',
-          description: 'this is how we do it',
-          addedById: '1234',
-          addedByName: 'Peter Parker',
-          created_at: 'today',
-          updated_at: 'tomorrow',
-        }, {
-          _id: '2',
-          name: 'second kata',
-          description: 'or you can do it that way I guess',
-          addedById: '9876',
-          addedByName: 'Spider-man',
-          created_at: 'next thursday',
-          updated_at: 'a week today',
-        }]));
+        _id: '1',
+        name: 'first kata',
+        description: 'this is how we do it',
+        addedById: '1234',
+        addedByName: 'Peter Parker',
+        created_at: 'today',
+        updated_at: 'tomorrow',
+      }, {
+        _id: '2',
+        name: 'second kata',
+        description: 'or you can do it that way I guess',
+        addedById: '9876',
+        addedByName: 'Spider-man',
+        created_at: 'next thursday',
+        updated_at: 'a week today',
+      }]));
       after(() => Kata.find.restore());
 
       it('should set status to 200', () => {

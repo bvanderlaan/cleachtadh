@@ -7,6 +7,19 @@ const { Types: { ObjectId } } = require('mongoose');
 const nconf = require('../config');
 const User = require('./user.model').getModel();
 
+const validatePaginationParameters = (paramValue) => {
+  if (paramValue === undefined) {
+    return undefined;
+  }
+
+  const value = parseInt(paramValue, 10);
+  return (Number.isNaN(value) || value <= 0)
+    ? null
+    : value;
+};
+
+const findAll = ({ limit, page }) => (limit ? User.paginate({}, { limit, page }) : User.find({}));
+
 /**
  * @swagger
  * tags:
@@ -24,6 +37,29 @@ module.exports = {
    *       - users
    *     security:
    *       - bearerToken: []
+   *     parameters:
+   *       - in: query
+   *         name: limit
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *         description: |
+   *           (Optional) The number of entries to return. This allows the request to
+   *           be limited to a given number of entires regardless of how many entries
+   *           exist. For example if there are 100 entries we can limit the returned
+   *           entries to just the first 10. If the limit exceeds the number of entries
+   *           then only the existing number of entries will be returned.
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *         description: |
+   *           (Optional) Used to set which page to return. This is the offset from the
+   *           beginning of the collection to return where each page is the size of the
+   *           limit value. For example if the limit is set to 10 then a page of 3 would
+   *           skip the first 20 entries and return entries 30 through 39. If the page
+   *           exceeds the end of the entries then an empty array will be returned.
    *     responses:
    *       200:
    *         description: |
@@ -40,21 +76,52 @@ module.exports = {
    *                   type: array
    *                   items:
    *                     $ref: "#/components/schemas/User"
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
    *       401:
    *         $ref: "#/components/responses/NotAuthenticated"
    *       500:
    *         $ref: "#/components/responses/ServerError"
    */
   find(req, res) {
-    return User.find({})
+    const helpURL = new URL('/docs/#/users/get_api_v1_users', nconf.get('app_public_path'));
+
+    const limit = validatePaginationParameters(req.query.limit);
+    const page = validatePaginationParameters(req.query.page);
+
+    if (limit === null) {
+      res.status(400).json({
+        message: `Error: Invalid limit value: ${req.query.limit}`,
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (page === null) {
+      res.status(400).json({
+        message: `Error: Invalid page value: ${req.query.page}`,
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (page && !limit) {
+      res.status(400).json({
+        message: 'Error: Missing limit value',
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    req.log.info({ limit, page }, 'Fetching Users');
+
+    return findAll({ limit, page })
       .then((response) => {
-        const users = response.map(user => user.present());
+        const users = (response.docs || response).map(user => user.present());
 
         return res.status(200).json({ users });
       })
       .catch((err) => {
-        const helpURL = new URL('/docs/#/users/get_api_v1_users', nconf.get('app_public_path'));
-
         req.log.error({ err }, 'Failed to retrieve users');
         res.status(500).json({
           message: 'Error: Failed to retrieve users',

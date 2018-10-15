@@ -2,6 +2,7 @@
 
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 
 /**
  * @swagger
@@ -64,6 +65,7 @@ const schema = mongoose.Schema({
     },
   },
 });
+schema.plugin(mongoosePaginate);
 
 schema.pre('save', function (next) {
   if (this.isModified('local.password')) {
