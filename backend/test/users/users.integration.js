@@ -70,6 +70,7 @@ describe('Integration :: User Route', () => {
             expect(res.json, 'json').to.have.been.calledOnce;
             expect(res.json, 'json').to.have.been.calledWith({
               users: [],
+              total: undefined,
             });
           });
       });
@@ -138,6 +139,7 @@ describe('Integration :: User Route', () => {
                   admin: false,
                   state: User.States().PENDING,
                 }],
+                total: 2,
               });
             });
         });
@@ -207,6 +209,7 @@ describe('Integration :: User Route', () => {
                   admin: false,
                   state: User.States().PENDING,
                 }],
+                total: 2,
               });
             });
         });
@@ -276,6 +279,7 @@ describe('Integration :: User Route', () => {
                 admin: false,
                 state: User.States().PENDING,
               }],
+              total: undefined,
             });
           });
       });

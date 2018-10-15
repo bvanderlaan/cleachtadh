@@ -120,6 +120,7 @@ describe('Unit :: Users Route', () => {
             expect(res.json, 'json').to.have.been.calledOnce;
             expect(res.json, 'json').to.have.been.calledWith({
               users: [],
+              total: undefined,
             });
           });
       });
@@ -359,6 +360,7 @@ describe('Unit :: Users Route', () => {
               state: 0,
             }),
           ],
+          total: 2,
         }));
         after(() => User.paginate.restore());
 
@@ -402,6 +404,7 @@ describe('Unit :: Users Route', () => {
                   admin: true,
                   state: 0,
                 }],
+                total: 2,
               });
             });
         });
@@ -459,6 +462,7 @@ describe('Unit :: Users Route', () => {
                 admin: true,
                 state: 0,
               }],
+              total: undefined,
             });
           });
       });

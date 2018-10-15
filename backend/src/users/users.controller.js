@@ -119,7 +119,7 @@ module.exports = {
       .then((response) => {
         const users = (response.docs || response).map(user => user.present());
 
-        return res.status(200).json({ users });
+        return res.status(200).json({ users, total: response.total });
       })
       .catch((err) => {
         req.log.error({ err }, 'Failed to retrieve users');
