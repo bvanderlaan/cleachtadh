@@ -27,7 +27,7 @@ const validatePaginationParameters = (paramValue) => {
   return (Number.isNaN(value) || value <= 0)
     ? null
     : value;
-}
+};
 
 const findAll = ({ limit, page }) => (limit ? Kata.paginate({}, { limit, page }) : Kata.find({}));
 
@@ -94,8 +94,8 @@ module.exports = {
   find(req, res) {
     const helpURL = new URL('/docs/#/katas/get_api_v1_katas', nconf.get('app_public_path'));
 
-    let limit = validatePaginationParameters(req.query.limit);
-    let page = validatePaginationParameters(req.query.page);
+    const limit = validatePaginationParameters(req.query.limit);
+    const page = validatePaginationParameters(req.query.page);
 
     if (limit === null) {
       res.status(400).json({
@@ -115,7 +115,7 @@ module.exports = {
 
     if (page && !limit) {
       res.status(400).json({
-        message: `Error: Missing limit value`,
+        message: 'Error: Missing limit value',
         moreInfo: helpURL.toString(),
       });
       return Promise.resolve();
@@ -347,7 +347,7 @@ module.exports = {
       })
       .then(() => {
         if (!res.headersSent) {
-          res.status(204).end()
+          res.status(204).end();
         }
       })
       .catch((err) => {
