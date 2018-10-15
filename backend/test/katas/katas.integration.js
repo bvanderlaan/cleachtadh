@@ -15,6 +15,7 @@ const createRequest = () => {
   const req = {
     body: {},
     params: {},
+    query: {},
     user: {
       _id: 'myUserId',
       displayName: 'Bruce Banner',
@@ -150,6 +151,156 @@ describe('Integration :: Katas Route', () => {
               }],
             });
           });
+      });
+    });
+
+    describe('Pagination', () => {
+      describe('when limit is set', () => {
+        let kata1Id;
+        let kata2Id;
+
+        before('populate database', () => {
+          const kata1 = new Kata();
+          kata1.name = 'first kata';
+          kata1.description = 'this is how we do it';
+          kata1.addedById = 'myUserId';
+          kata1.addedByName = 'Bruce Banner';
+
+          const kata2 = new Kata();
+          kata2.name = 'second kata';
+          kata2.description = 'or you can do it that way I guess';
+          kata2.addedById = 'myOtherUserId';
+          kata2.addedByName = 'Hulk, The';
+
+          return kata1.save()
+            .then(() => kata2.save())
+            .then(() => {
+              kata1Id = kata1._id;
+              kata2Id = kata2._id;
+            });
+        });
+        after('Clean up database', () => (
+          Promise.all([
+            kata1Id ? Kata.findByIdAndDelete(kata1Id) : undefined,
+            kata2Id ? Kata.findByIdAndDelete(kata2Id) : undefined,
+          ])
+        ));
+
+        it('should set status to 200', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.limit = 1;
+
+          return expect(kataController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.status, 'status').to.have.been.calledOnce;
+              expect(res.status, 'status').to.have.been.calledWith(200);
+            });
+        });
+
+        it('should only return first limit results', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.limit = 1;
+
+          return expect(kataController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.json, 'json').to.have.been.calledOnce;
+              expect(res.json, 'json').to.have.been.calledWith({
+                katas: [{
+                  id: kata1Id.toString(),
+                  name: 'first kata',
+                  description: 'this is how we do it',
+                  addedBy: {
+                    id: 'myUserId',
+                    name: 'Bruce Banner',
+                  },
+                  created_at: sinon.match.date,
+                }],
+              });
+            });
+        });
+      });
+
+      describe('when page is set', () => {
+        let kata1Id;
+        let kata2Id;
+
+        before('populate database', () => {
+          const kata1 = new Kata();
+          kata1.name = 'first kata';
+          kata1.description = 'this is how we do it';
+          kata1.addedById = 'myUserId';
+          kata1.addedByName = 'Bruce Banner';
+
+          const kata2 = new Kata();
+          kata2.name = 'second kata';
+          kata2.description = 'or you can do it that way I guess';
+          kata2.addedById = 'myOtherUserId';
+          kata2.addedByName = 'Hulk, The';
+
+          return kata1.save()
+            .then(() => kata2.save())
+            .then(() => {
+              kata1Id = kata1._id;
+              kata2Id = kata2._id;
+            });
+        });
+        after('Clean up database', () => (
+          Promise.all([
+            kata1Id ? Kata.findByIdAndDelete(kata1Id) : undefined,
+            kata2Id ? Kata.findByIdAndDelete(kata2Id) : undefined,
+          ])
+        ));
+
+        it('should set status to 200', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.page = 2;
+          req.query.limit = 1;
+
+          return expect(kataController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.status, 'status').to.have.been.calledOnce;
+              expect(res.status, 'status').to.have.been.calledWith(200);
+            });
+        });
+
+        it('should return second page', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.page = 2;
+          req.query.limit = 1;
+
+          return expect(kataController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.json, 'json').to.have.been.calledOnce;
+              expect(res.json, 'json').to.have.been.calledWith({
+                katas: [{
+                  id: kata2Id.toString(),
+                  name: 'second kata',
+                  description: 'or you can do it that way I guess',
+                  addedBy: {
+                    id: 'myOtherUserId',
+                    name: 'Hulk, The',
+                  },
+                  created_at: sinon.match.date,
+                }],
+              });
+            });
+        });
       });
     });
   });

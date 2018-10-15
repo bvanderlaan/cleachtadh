@@ -112,6 +112,59 @@ describe('System :: Katas Route', () => {
           })
       ));
     });
+
+    describe('Pagination', () => {
+      describe('when succeed to fetch kata\'s', () => {
+        let kata1Id;
+        let kata2Id;
+
+        before('populate database', () => {
+          const kata1 = createKata({
+            name: 'my first system kata',
+            description: 'this is how we do it',
+          });
+
+          const kata2 = createKata({
+            name: 'my second system kata',
+            description: 'or you can do it that way I guess',
+          });
+
+          return Promise.all([kata1, kata2])
+            .then(([response1, response2]) => {
+              kata1Id = response1.body.id;
+              kata2Id = response2.body.id;
+            });
+        });
+        after('Clean up database', () => (
+          Promise.all([
+            kata1Id ? deleteKata(kata1Id) : undefined,
+            kata2Id ? deleteKata(kata2Id) : undefined,
+          ])
+        ));
+
+        it('should find all the katas', () => (
+          expect(request.get(`${server.url}/v1/katas?limit=1&page=2`))
+            .to.eventually.be.fulfilled
+            .then((response) => {
+              expect(response).to.have.property('status', 200);
+              expect(response).to.have.property('body');
+              expect(response.body).to.have.property('katas')
+                .which.is.an('array')
+                .and.has.length(1);
+
+              const kata2 = response.body.katas[0];
+              expect(kata2, 'kata2').to.have.property('id');
+              expect(kata2, 'kata2').to.have.property('name', 'my second system kata');
+              expect(kata2, 'kata2')
+                .to.have.property('description', 'or you can do it that way I guess');
+              expect(kata2, 'kata2').to.have.property('created_at');
+              expect(kata2, 'kata2').to.have.property('addedBy');
+              expect(kata2.addedBy, 'kata2').to.have.property('id');
+              expect(kata2.addedBy, 'kata2').to.have.property('name', 'Rocket Racoon');
+            })
+        ));
+      });
+    });
   });
 
   describe('FindOne', () => {

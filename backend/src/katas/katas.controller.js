@@ -18,6 +18,19 @@ const presentKata = kata => ({
   created_at: kata.created_at,
 });
 
+const validatePaginationParameters = (paramValue) => {
+  if (paramValue === undefined) {
+    return undefined;
+  }
+
+  const value = parseInt(paramValue, 10);
+  return (Number.isNaN(value) || value <= 0)
+    ? null
+    : value;
+}
+
+const findAll = ({ limit, page }) => (limit ? Kata.paginate({}, { limit, page }) : Kata.find({}));
+
 /**
  * @swagger
  * tags:
@@ -34,6 +47,29 @@ module.exports = {
    *       This route returns a collection of coding katas which exist in the registry.
    *     tags:
    *       - katas
+   *     parameters:
+   *       - in: query
+   *         name: limit
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *         description: |
+   *           (Optional) The number of entries to return. This allows the request to
+   *           be limited to a given number of entires regardless of how many entries
+   *           exist. For example if there are 100 entries we can limit the returned
+   *           entries to just the first 10. If the limit exceeds the number of entries
+   *           then only the existing number of entries will be returned.
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *         description: |
+   *           (Optional) Used to set which page to return. This is the offset from the
+   *           beginning of the collection to return where each page is the size of the
+   *           limit value. For example if the limit is set to 10 then a page of 3 would
+   *           skip the first 20 entries and return entries 30 through 39. If the page
+   *           exceeds the end of the entries then an empty array will be returned.
    *     responses:
    *       200:
    *         description: |
@@ -50,19 +86,50 @@ module.exports = {
    *                   type: array
    *                   items:
    *                     $ref: "#/components/schemas/Kata"
+   *       400:
+   *         $ref: "#/components/responses/BadRequest"
    *       500:
    *         $ref: "#/components/responses/ServerError"
    */
   find(req, res) {
-    return Kata.find({})
+    const helpURL = new URL('/docs/#/katas/get_api_v1_katas', nconf.get('app_public_path'));
+
+    let limit = validatePaginationParameters(req.query.limit);
+    let page = validatePaginationParameters(req.query.page);
+
+    if (limit === null) {
+      res.status(400).json({
+        message: `Error: Invalid limit value: ${req.query.limit}`,
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (page === null) {
+      res.status(400).json({
+        message: `Error: Invalid page value: ${req.query.page}`,
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    if (page && !limit) {
+      res.status(400).json({
+        message: `Error: Missing limit value`,
+        moreInfo: helpURL.toString(),
+      });
+      return Promise.resolve();
+    }
+
+    req.log.info({ limit, page }, 'Fetching Katas');
+
+    return findAll({ limit, page })
       .then((response) => {
-        const katas = response.map(presentKata);
+        const katas = (response.docs || response).map(presentKata);
 
         return res.status(200).json({ katas });
       })
       .catch((err) => {
-        const helpURL = new URL('/docs/#/katas/get_api_v1_katas', nconf.get('app_public_path'));
-
         req.log.error({ err }, 'Failed to retrieve katas');
         res.status(500).json({
           message: 'Error: Failed to retrieve katas',

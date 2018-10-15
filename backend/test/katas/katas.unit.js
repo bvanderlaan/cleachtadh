@@ -15,6 +15,7 @@ const createRequest = () => {
   const req = {
     body: {},
     params: {},
+    query: {},
     user: {
       _id: '1234',
       displayName: 'Peter Parker',
@@ -112,24 +113,284 @@ describe('Unit :: Katas Route', () => {
       });
     });
 
+    describe('Pagination', () => {
+      describe('Limit', () => {
+        describe('when invalid value', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = 'not-a-number';
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = 'not-a-number';
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid limit value: not-a-number',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/get_api_v1_katas/),
+                });
+              });
+          });
+        });
+
+        describe('when negative', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = -5;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.limit = -5;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid limit value: -5',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/get_api_v1_katas/),
+                });
+              });
+          });
+        });
+      });
+
+      describe('Page', () => {
+        describe('when invalid value', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 'not-a-number';
+            req.query.limit = 10;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 'not-a-number';
+            req.query.limit = 10;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid page value: not-a-number',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/get_api_v1_katas/),
+                });
+              });
+          });
+        });
+
+        describe('when negative', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = -5;
+            req.query.limit = 10;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = -5;
+            req.query.limit = 10;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Invalid page value: -5',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/get_api_v1_katas/),
+                });
+              });
+          });
+        });
+
+        describe('when valid but missing limit', () => {
+          it('should set status to 400', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 5;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.status, 'status').to.have.been.calledOnce;
+                expect(res.status, 'status').to.have.been.calledWith(400);
+              });
+          });
+
+          it('should return error message in json body', () => {
+            const req = createRequest();
+            const res = createResponse();
+            const next = sinon.stub();
+
+            req.query.page = 5;
+
+            return expect(kataController.find(req, res, next))
+              .to.eventually.be.fulfilled
+              .then(() => {
+                expect(res.json, 'json').to.have.been.calledOnce;
+                expect(res.json, 'json').to.have.been.calledWith({
+                  message: 'Error: Missing limit value',
+                  moreInfo: sinon.match(/http(.+)\/docs\/#\/katas\/get_api_v1_katas/),
+                });
+              });
+          });
+        });
+      });
+
+      describe('when succeed to fetch kata\'s', () => {
+        before(() => sinon.stub(Kata, 'paginate').resolves({
+          docs: [{
+            _id: '1',
+            name: 'first kata',
+            description: 'this is how we do it',
+            addedById: '1234',
+            addedByName: 'Peter Parker',
+            created_at: 'today',
+            updated_at: 'tomorrow',
+          }, {
+            _id: '2',
+            name: 'second kata',
+            description: 'or you can do it that way I guess',
+            addedById: '9876',
+            addedByName: 'Spider-man',
+            created_at: 'next thursday',
+            updated_at: 'a week today',
+          }],
+        }));
+        after(() => Kata.paginate.restore());
+
+        it('should set status to 200', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.limit = 2;
+          req.query.page = 2;
+
+          return expect(kataController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.status, 'status').to.have.been.calledOnce;
+              expect(res.status, 'status').to.have.been.calledWith(200);
+            });
+        });
+
+        it('should return katas in json body', () => {
+          const req = createRequest();
+          const res = createResponse();
+          const next = sinon.stub();
+
+          req.query.limit = 2;
+          req.query.page = 2;
+
+          return expect(kataController.find(req, res, next))
+            .to.eventually.be.fulfilled
+            .then(() => {
+              expect(res.json, 'json').to.have.been.calledOnce;
+              expect(res.json, 'json').to.have.been.calledWith({
+                katas: [{
+                  id: '1',
+                  name: 'first kata',
+                  description: 'this is how we do it',
+                  addedBy: {
+                    id: '1234',
+                    name: 'Peter Parker',
+                  },
+                  created_at: 'today',
+                }, {
+                  id: '2',
+                  name: 'second kata',
+                  description: 'or you can do it that way I guess',
+                  addedBy: {
+                    id: '9876',
+                    name: 'Spider-man',
+                  },
+                  created_at: 'next thursday',
+                }],
+              });
+            });
+        });
+      });
+    });
+
     describe('when succeed to fetch kata\'s', () => {
       before(() => sinon.stub(Kata, 'find').resolves([{
-        _id: '1',
-        name: 'first kata',
-        description: 'this is how we do it',
-        addedById: '1234',
-        addedByName: 'Peter Parker',
-        created_at: 'today',
-        updated_at: 'tomorrow',
-      }, {
-        _id: '2',
-        name: 'second kata',
-        description: 'or you can do it that way I guess',
-        addedById: '9876',
-        addedByName: 'Spider-man',
-        created_at: 'next thursday',
-        updated_at: 'a week today',
-      }]));
+          _id: '1',
+          name: 'first kata',
+          description: 'this is how we do it',
+          addedById: '1234',
+          addedByName: 'Peter Parker',
+          created_at: 'today',
+          updated_at: 'tomorrow',
+        }, {
+          _id: '2',
+          name: 'second kata',
+          description: 'or you can do it that way I guess',
+          addedById: '9876',
+          addedByName: 'Spider-man',
+          created_at: 'next thursday',
+          updated_at: 'a week today',
+        }]));
       after(() => Kata.find.restore());
 
       it('should set status to 200', () => {

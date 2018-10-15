@@ -1,6 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 
 /**
  * @swagger
@@ -63,6 +64,7 @@ const schema = mongoose.Schema({
     updatedAt: 'updated_at',
   },
 });
+schema.plugin(mongoosePaginate);
 
 module.exports = {
   getModel() {
