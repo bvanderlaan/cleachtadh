@@ -14,18 +14,39 @@ export class UserListComponent implements OnInit {
   private users: User[];
   public error: string;
   public currentUserId: string;
+  public currentPage: Number;
+  public itemsPerPage: Number;
+  public total: Number;
+  public loading: boolean;
 
   constructor(private service: UserListService, private authService: AuthenticationService) {
     this.users = [];
     this.error = '';
     this.currentUserId = '';
+    this.loading = false;
+    this.currentPage = 1;
+    this.itemsPerPage = 19;
+    this.total = 0;
   }
 
   ngOnInit() {
-    this.service.getUsers().subscribe(users => (this.users = users));
+    this.getPage(1);
+
     this.authService.userLogInStateSignal.subscribe((currentUser) => {
       this.currentUserId = currentUser.id;
     });
+  }
+
+  getPage(page: Number) {
+    this.loading = true;
+
+    this.service.getUsers(this.itemsPerPage, page)
+      .subscribe((data) => {
+        this.users = data.users;
+        this.currentPage = page;
+        this.total = data.total;
+        this.loading = false;
+      });
   }
 
   clearError() {

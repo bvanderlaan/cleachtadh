@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -16,18 +16,22 @@ export class UserListService {
 
   constructor(private http: HttpClient, private authService: AuthenticationService) { }
 
-  getUsers() : Observable<User[]> {
+  getUsers(limit: Number, page: Number) : Observable<Users> {
+    const params = new HttpParams()
+      .append('limit', String(limit))
+      .append('page', String(page));
+
     const httpOptions = {
+      params,
       headers: new HttpHeaders({
         'Authorization': this.authService.token,
       }),
     };
 
     return this.http.get<Users>(`${AppSettings.API_ENDPOINT}/v1/users`, httpOptions)
-      .pipe(map(data => data.users),
-        catchError((res: HttpErrorResponse) => {
+      .pipe(catchError((res: HttpErrorResponse) => {
           console.error(`GET Users Failed: ${res.error.message || res.statusText}`);
-          return of([]);
+          return of({ users: [], total: 0 });
         }));
   }
 
@@ -48,4 +52,5 @@ export class UserListService {
 
 interface Users {
   users: User[],
+  total: Number,
 }

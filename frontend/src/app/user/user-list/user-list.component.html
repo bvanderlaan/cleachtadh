@@ -3,7 +3,7 @@
     <button class="close" (click)="clearError()" aria-label="close">&times;</button>
     <strong>Oops:</strong> {{error}}.
   </div>
-  <div *ngFor="let user of users">
+  <div *ngFor="let user of users | paginate: { id: 'users', itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: total }">
     <div class="user">
       <div class="container-fluid">
           <div class="row">
@@ -23,5 +23,8 @@
           </div>
       </div>
     </div>
+  </div>
+  <div>
+    <pagination-controls (pageChange)="getPage($event)" id="users"></pagination-controls>
   </div>
 </div>
