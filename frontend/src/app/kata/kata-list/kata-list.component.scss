@@ -17,3 +17,8 @@
 button {
   margin-left: 5px;
 }
+
+pagination-controls /deep/ .ngx-pagination {
+  padding-left: 0;
+  text-align: center;
+}

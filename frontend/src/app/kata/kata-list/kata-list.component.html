@@ -1,5 +1,5 @@
 <div *ngIf="katas.length > 0">
-  <div *ngFor="let kata of katas">
+  <div *ngFor="let kata of katas | paginate: { id: 'katas', itemsPerPage: itemsPerPage, currentPage: currentPage, totalItems: total }">
     <div class="kata">
       <div class="container-fluid">
         <a [routerLink]="['/katas', kata.id]">
@@ -9,6 +9,9 @@
         </a>
       </div>
     </div>
+  </div>
+  <div>
+    <pagination-controls (pageChange)="getPage($event)" id="katas"></pagination-controls>
   </div>
 </div>
 <div *ngIf="katas.length === 0" class="mx-auto">

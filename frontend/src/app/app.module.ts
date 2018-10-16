@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { MarkdownModule, MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 import { UiSwitchModule } from 'ngx-ui-switch';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { RootComponent } from './root/root.component';
@@ -47,6 +48,7 @@ const markedOptions = {
     HttpClientModule,
     MarkdownModule.forRoot({ markedOptions }),
     UiSwitchModule,
+    NgxPaginationModule,
   ],
   providers: [AuthenticationGuard, AdminGuard],
   bootstrap: [RootComponent]
