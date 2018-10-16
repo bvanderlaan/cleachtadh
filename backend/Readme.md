@@ -7,6 +7,8 @@ The cleachtadh service has an HTTP RESTful API.
 It also hosts interactive documentation for its RESTful APIs at its `/docs` route.
 For details on how to use the APIs start the cleachtadh service and navigate to its `/docs` route.
 
+The first time the Cleachtadh API node comes up it will publish a Web User Interface on it's root route _if_ and only if the data store has zero users setup. If no Administrator user exists in the data store the WUI will be accessible and provide a form for creating the administrator user. Once the form is submitted the administrator user will be created then the WUI will be removed.
+
 ### Installation
 
 To install cleachtadh in a non-Containerized environment you need to setup a server running Node.js.
