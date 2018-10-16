@@ -25,6 +25,12 @@
     </div>
   </div>
   <div>
+    <div class="spinner" [ngClass]="{ 'd-none': !loading }">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
     <pagination-controls (pageChange)="getPage($event)" id="users"></pagination-controls>
   </div>
 </div>
