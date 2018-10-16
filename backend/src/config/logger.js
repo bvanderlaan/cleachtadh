@@ -16,6 +16,7 @@ module.exports.init = () => {
       level,
       name,
       version,
+      serializers: bunyan.stdSerializers,
     };
 
     const logger = bunyan.createLogger(loggingOptions);
