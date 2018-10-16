@@ -1,6 +1,8 @@
 # cleachtadh
 A code kata registry
 
+This project hosts a RESTful API and a Single Page Application (SPA) web client which provides users the ability to view different coding katas. Users can insert new coding katas to build up the registry of practice excesses.
+
 ## Usage
 
 The cleachtadh project has been split up into a _backend_ and a _frontend_.
