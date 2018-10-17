@@ -95,10 +95,11 @@ schema.methods.present = function () {
   };
 };
 
-schema.statics.States = () => ({
+const userStates = {
   PENDING: 0,
   ACTIVE: 1,
-});
+};
+schema.statics.States = () => userStates;
 
 module.exports = {
   getModel() {
