@@ -10,7 +10,7 @@ module.exports = {
       return next();
     }
 
-    const helpURL = new URL('/docs/#/katas/get_api_v1_users', nconf.get('app_public_path'));
+    const helpURL = new URL('/docs', nconf.get('app_public_path'));
 
     return res.status(401).json({
       message: 'Error: Not Authorized to perform this request',
