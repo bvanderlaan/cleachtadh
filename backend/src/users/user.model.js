@@ -1,3 +1,5 @@
+/* eslint-disable func-names */
+
 'use strict';
 
 const bcrypt = require('bcrypt');
