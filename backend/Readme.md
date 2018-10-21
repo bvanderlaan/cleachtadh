@@ -1,4 +1,6 @@
 # cleachtadh
+[![Build Status](https://travis-ci.org/bvanderlaan/cleachtadh.svg?branch=master)](https://travis-ci.org/bvanderlaan/cleachtadh)
+
 A code kata registry
 
 ## Usage

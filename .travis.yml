@@ -1,0 +1,23 @@
+language: node_js
+sudo: required
+dist: trusty
+os: linux
+git:
+  depth: 1
+services:
+  - docker
+before_install:
+  - cd backend
+  - docker -v
+  - docker-compose -v
+install:
+  - echo 'do nothing'
+before_script:
+  - chmod +x -R script
+  - mkdir reports
+  - chmod a+rw reports
+script:
+  - docker-compose -f docker-compose.yml -f docker-compose.test.yml run --rm cleachtadh script/test
+after_script:
+  - docker-compose rm -f -s -v
+  - docker volume rm backend_node_modules
