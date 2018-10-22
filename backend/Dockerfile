@@ -6,19 +6,21 @@ RUN apk add --no-cache     bash     curl     gcc     g++     make     nano     p
 
 # Create directory for the application
 ENV WORKDIR=/usr/src/app
-RUN mkdir -p $WORKDIR
+RUN mkdir -p $WORKDIR && \
+    chown node:node $WORKDIR
 WORKDIR $WORKDIR
+USER node
 
 # Copy required files for install and bootstrap image
-COPY script/ script/
-COPY ./package.json $WORKDIR/
+COPY --chown=node:node script/ script/
+COPY --chown=node:node ./package.json $WORKDIR/
 RUN script/bootstrap
 
 # Reset npm logging to default levels
 ENV NPM_CONFIG_LOGLEVEL warn
 
 # Copy application
-COPY . $WORKDIR
+COPY --chown=node:node . $WORKDIR
 
 # Run server
 CMD [ "script/server" ]
